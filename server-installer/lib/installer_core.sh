@@ -92,3 +92,45 @@ safe_cat_redacted() {
   fi
   redact_sensitive < "$file"
 }
+
+# Safely update and migrate authorized_keys from v1.0.0 to v1.0.1
+# Converts legacy key restrictions (which had no-port-forwarding) into hardened restrictions:
+# command="/bin/false",no-agent-forwarding,no-pty,no-user-rc,no-X11-forwarding,permitopen="127.0.0.1:8320",permitlisten="127.0.0.1:1"
+# Preserves non-product keys, comments, and structure byte-for-byte.
+migrate_authorized_keys_file() {
+  local auth_file="$1"
+  local target_host="${2:-127.0.0.1}"
+  local target_port="${3:-8320}"
+
+  if [[ ! -f "$auth_file" ]]; then
+    return 0
+  fi
+
+  local tmp_file="${auth_file}.tmp.$$"
+  local backup_file="${auth_file}.bak.$(date +%Y%m%dT%H%M%S)"
+  cp -a "$auth_file" "$backup_file"
+
+  local changed=0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if echo "$line" | grep -q "permitopen=\"${target_host}:${target_port}\"" && echo "$line" | grep -q "no-port-forwarding"; then
+      local pub_part
+      pub_part=$(echo "$line" | awk '{for(i=1;i<=NF;i++){if($i ~ /^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521)$/){for(j=i;j<=NF;j++) printf "%s%s", $j, (j==NF?"\n":" "); break}}}')
+      if [[ -n "$pub_part" ]]; then
+        generate_restricted_authorized_key_entry "$pub_part" "$target_host" "$target_port" >> "$tmp_file"
+        changed=1
+      else
+        echo "$line" >> "$tmp_file"
+      fi
+    else
+      echo "$line" >> "$tmp_file"
+    fi
+  done < "$auth_file"
+
+  if [[ "$changed" -eq 1 ]]; then
+    mv "$tmp_file" "$auth_file"
+    chmod 0600 "$auth_file"
+    log_ok "Migrated legacy authorized_keys restrictions in $auth_file"
+  else
+    rm -f "$tmp_file"
+  fi
+}

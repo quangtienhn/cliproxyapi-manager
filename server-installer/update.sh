@@ -89,9 +89,18 @@ else
   mv "$STAGING_DIR" "$DEFAULT_APP_DIR"
 fi
 
-chown -R root:root "$DEFAULT_APP_DIR"
+if [[ "${INSTALLER_TEST_MODE:-0}" != "1" ]]; then
+  chown -R root:root "$DEFAULT_APP_DIR"
+fi
 find "$DEFAULT_APP_DIR" -type d -exec chmod 0755 {} +
 find "$DEFAULT_APP_DIR" -type f -exec chmod 0644 {} +
+
+# Migrate legacy tunnel authorized_keys if present
+USER_AUTH_FILE="${USER_AUTH_FILE:-/home/$DEFAULT_TUNNEL_USER/.ssh/authorized_keys}"
+if [[ -f "$USER_AUTH_FILE" ]]; then
+  log_info "Auditing and migrating SSH tunnel authorized_keys..."
+  migrate_authorized_keys_file "$USER_AUTH_FILE" "127.0.0.1" "$DEFAULT_PORT"
+fi
 
 # 4. Restart & Health Check
 log_info "[3/4] Restarting service..."
