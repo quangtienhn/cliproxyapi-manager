@@ -36,7 +36,7 @@ generate_random_secret() {
 }
 
 # Generate restricted SSH authorized_keys line
-# Enforces: no shell, no PTY, no agent/X11 forward, restricted permitopen to loopback target
+# Enforces: no shell, no PTY, no agent/X11 forward, restricted permitopen to loopback target, no reverse forward
 generate_restricted_authorized_key_entry() {
   local pubkey="$1"
   local target_host="${2:-127.0.0.1}"
@@ -51,7 +51,7 @@ generate_restricted_authorized_key_entry() {
     return 1
   fi
 
-  echo "command=\"/bin/false\",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding,permitopen=\"${target_host}:${target_port}\" ${clean_key}"
+  echo "command=\"/bin/false\",no-agent-forwarding,no-pty,no-user-rc,no-X11-forwarding,permitopen=\"${target_host}:${target_port}\",permitlisten=\"127.0.0.1:1\" ${clean_key}"
 }
 
 # Verify system prerequisites
