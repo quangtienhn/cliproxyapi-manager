@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# cliproxy-manager - Unified Management CLI
+# ==============================================================================
+set -euo pipefail
+
+CLI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+usage() {
+  cat << 'EOF'
+cliproxy-manager - Unified CLI for CLIProxyAPI Account Manager
+
+Usage:
+  cliproxy-manager <command> [options]
+
+Commands:
+  install        Install Account Manager on this server
+  check          Run health checks and environment diagnostics
+  check-update   Check current version and update readiness
+  update         Safely update Account Manager with snapshot rollback
+  backup         Create a full protected backup of configuration & auth
+  restore        Restore configuration and auth from a verified backup
+  diagnostics    Generate a redacted diagnostics report
+  uninstall      Safely uninstall Account Manager (preserves data by default)
+  help           Display this help screen
+
+Examples:
+  sudo cliproxy-manager check
+  sudo cliproxy-manager backup
+  sudo cliproxy-manager update
+  sudo cliproxy-manager diagnostics
+EOF
+  exit 0
+}
+
+COMMAND="${1:-}"
+shift || true
+
+case "$COMMAND" in
+  install)
+    exec bash "$CLI_DIR/install.sh" "$@"
+    ;;
+  check)
+    exec bash "$CLI_DIR/diagnostics.sh" "$@"
+    ;;
+  check-update)
+    exec bash "$CLI_DIR/update.sh" --check "$@"
+    ;;
+  update)
+    exec bash "$CLI_DIR/update.sh" "$@"
+    ;;
+  backup)
+    exec bash "$CLI_DIR/backup.sh" "$@"
+    ;;
+  restore)
+    exec bash "$CLI_DIR/restore.sh" "$@"
+    ;;
+  diagnostics)
+    exec bash "$CLI_DIR/diagnostics.sh" "$@"
+    ;;
+  uninstall)
+    exec bash "$CLI_DIR/uninstall.sh" "$@"
+    ;;
+  help|--help|-h|"")
+    usage
+    ;;
+  *)
+    echo "[ERROR] Unknown command: $COMMAND" >&2
+    usage
+    ;;
+esac

@@ -1,0 +1,28 @@
+# Logs & Runtime
+node_modules/
+*.log
+*.tmp
+*.staging.*
+*.old.*
+
+# Backups and generated state
+var_backups/
+/data/
+*.pid
+id_ed25519
+id_ed25519.pub
+known_hosts
+
+# Secrets & Environment local files
+.env
+manager.env
+*.key
+*.pem
+
+# OS & Editor artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~

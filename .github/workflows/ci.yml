@@ -1,0 +1,40 @@
+name: CI Validation and Security Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Core Installer Unit Tests
+        run: |
+          chmod +x server-installer/install.sh server-installer/backup.sh server-installer/restore.sh server-installer/diagnostics.sh server-installer/update.sh server-installer/uninstall.sh
+          chmod +x tests/unit/*.sh tests/integration/*.sh
+          bash tests/unit/test_installer_core.sh
+
+      - name: Run HAOS Ingress Proxy Unit Tests
+        run: |
+          node tests/unit/test_haos_proxy.js
+
+      - name: Run Integration Lifecycle Tests
+        run: |
+          bash tests/integration/test_lifecycle.sh
+
+      - name: Security Audit & Secret Scanning
+        run: |
+          # Verify no secrets committed in repository files
+          ! grep -rE "gho_[A-Za-z0-9_]{20,}" --exclude-dir=.git .
+          ! grep -rE "AKIA[0-9A-Z]{16}" --exclude-dir=.git .
+          ! grep -rE "-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----" --exclude-dir=.git .

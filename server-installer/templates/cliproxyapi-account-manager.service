@@ -1,0 +1,25 @@
+[Unit]
+Description=CLIProxyAPI LAN Account Manager
+After=network.target cliproxyapi.service
+Wants=cliproxyapi.service
+
+[Service]
+Type=simple
+User=cliproxyapi
+Group=cliproxyapi
+WorkingDirectory=/opt/cliproxyapi-account-manager
+EnvironmentFile=/etc/cliproxyapi-account-manager/manager.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5s
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ReadOnlyPaths=/usr/local/bin/cliproxyapi
+ReadWritePaths=/var/lib/cliproxyapi /var/log/cliproxyapi-account-manager /var/lib/cliproxyapi-account-manager
+
+[Install]
+WantedBy=multi-user.target

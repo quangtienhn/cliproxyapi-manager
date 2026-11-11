@@ -1,0 +1,31 @@
+name: CLIProxyAPI Account Manager Tunnel
+version: "1.0.0"
+slug: cliproxyapi_am_tunnel
+description: Secure SSH tunnel to the Account Manager, exposed only through HAOS Ingress
+url: https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: auto
+init: true
+ingress: true
+ingress_port: 8080
+ingress_entry: /
+panel_icon: mdi:account-key
+panel_title: Account Manager
+watchdog: http://[HOST]:[PORT:8080]/healthz
+options:
+  server_host: ""
+  server_port: 22
+  server_user: amtunnel
+  remote_host: 127.0.0.1
+  remote_port: 8320
+  host_key: ""
+schema:
+  server_host: str
+  server_port: port
+  server_user: str
+  remote_host: str
+  remote_port: port
+  host_key: str
