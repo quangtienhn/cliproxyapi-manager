@@ -68,6 +68,8 @@ if [[ -d "$SPECIFIED_BACKUP/config" ]]; then
   fi
   chmod 0750 "$DEFAULT_CONFIG_DIR"
   chmod 0640 "$DEFAULT_CONFIG_DIR"/* 2>/dev/null || true
+  # Backups made by v1.0.0 may contain HOST=0.0.0.0; never restore WAN exposure.
+  enforce_loopback_bind "$DEFAULT_CONFIG_DIR/manager.env" || log_warn "Could not enforce loopback binding after restore."
 fi
 
 # 4. Restore CLIProxyAPI Config and OAuth Data (if present)

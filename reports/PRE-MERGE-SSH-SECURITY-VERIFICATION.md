@@ -1,4 +1,6 @@
 # PRE-MERGE SSH SECURITY & RESTRICTION VERIFICATION REPORT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. **v1.0.1 supersedes the remote-forwarding conclusion:** `permitlisten="127.0.0.1:1"` leaves loopback port 1 bindable, so it is not a complete `-R` prohibition. The authoritative control is now a per-user `sshd` `Match` block with `PermitListen none`, `AllowTcpForwarding local`, and `PermitOpen 127.0.0.1:8320`. Current evidence is in [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md).
+
 **Target Branch:** `fix/post-release-verification-v1.0.0`  
 **Test Environment:** Isolated OpenSSH Portable Daemon (OpenSSH 10.4p1) & OpenSSH Client (10.5p1)  
 **Date:** 2026-11-11  
@@ -56,7 +58,7 @@ Determine the exact boundary of `permitlisten="127.0.0.1:1"` and ensure no unaut
 | `8320` | `ssh -N -R 8320:127.0.0.1:8320` | **DENIED** (RC=255) | `request to remote forward to host localhost port 8320 was denied.` | **PASS** |
 
 ### Security Evaluation
-The key is cryptographically barred from binding to `0.0.0.0`, any LAN/WAN interface, `localhost`, IPv6 `::1`, or any usable port (>1). Port 1 on loopback is a non-routable low system port, completely preventing any attacker from exposing reverse listeners to external entities.
+The key option bars binding to `0.0.0.0`, any LAN/WAN interface, `localhost`, IPv6 `::1`, or any usable port (>1). **However, this is not a complete prohibition:** loopback port 1 can still be bound in some configurations. v1.0.1 therefore adds `PermitListen none` in a per-user `Match User amtunnel` block. When the per-user policy is absent (for example, an old backup restored without re-running the installer), `permitlisten="127.0.0.1:1"` remains as a secondary boundary only.
 
 ---
 

@@ -1,4 +1,6 @@
 # NETWORK EXPOSURE & CONFIGURATION SECURITY AUDIT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. v1.0.1 strengthened the tunnel from a `permitlisten`-only control to a per-user `sshd` `Match` block (`AllowTcpForwarding local`, `PermitOpen 127.0.0.1:8320`, `PermitListen none`). See [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md).
+
 **Date:** 2026-11-11  
 **Audit Target:** CLIProxyAPI Account Manager Easy Installer v1.0.0 Architecture  
 
@@ -26,5 +28,5 @@
 ---
 
 ## 2. Port & Firewall Assumptions
-- The installer relies on OpenSSH's cryptographic enforcement (`permitopen="127.0.0.1:8320"` and `permitlisten="127.0.0.1:1"`) rather than assuming an external firewall is already installed.
+- The installer relies on OpenSSH's cryptographic enforcement (`permitopen="127.0.0.1:8320"`) plus a per-user `sshd` `Match` block (`AllowTcpForwarding local`, `PermitOpen 127.0.0.1:8320`, `PermitListen none`, `AllowStreamLocalForwarding no`) rather than assuming an external firewall is already installed. `permitlisten="127.0.0.1:1"` is retained only as defence in depth.
 - Even if the host has no active packet filter, OpenSSH drops any connection attempt to ports other than 8320.

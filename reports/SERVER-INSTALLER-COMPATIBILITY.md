@@ -1,4 +1,6 @@
 # SERVER INSTALLER CROSS-PLATFORM COMPATIBILITY REPORT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. All results below are **simulations** on a Windows/Git Bash runtime, not native Linux. v1.0.1 re-ran the same matrix. Native Debian/Ubuntu installs remain **not verified**; see [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md).
+
 **Target OS Scope:** Debian 12 (Bookworm), Debian 13 (Trixie), Ubuntu 22.04 LTS (Jammy), Ubuntu 24.04 LTS (Noble)  
 **Target Architectures:** AMD64 (x86_64) & ARM64 (aarch64)  
 **Verification Method:** Isolated Cross-Platform Simulation Matrix & Filesystem Mock  

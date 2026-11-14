@@ -70,11 +70,20 @@ if [[ "$PURGE_DATA" == "true" ]]; then
   rm -rf "$DEFAULT_CONFIG_DIR"
   rm -rf "$DEFAULT_DATA_DIR"
   rm -rf "$DEFAULT_LOG_DIR"
+
+  # Remove the forwarding policy and tunnel key this product created. The
+  # dedicated account itself is left in place so a reinstall can reuse it.
+  remove_restricted_authorized_keys "/home/$DEFAULT_TUNNEL_USER/.ssh/authorized_keys" \
+    "127.0.0.1" "$DEFAULT_PORT" \
+    || log_warn "Could not remove the managed tunnel key."
+  remove_tunnel_sshd_policy || log_warn "Could not remove the managed sshd policy."
 else
-  log_info "Preserving user configuration, logs, backups, and OAuth data."
+  log_info "Preserving user configuration, logs, backups, OAuth data, and SSH access."
   log_info "  - Configuration: $DEFAULT_CONFIG_DIR"
   log_info "  - OAuth credentials: $DEFAULT_AUTH_DIR"
   log_info "  - Backups: $DEFAULT_BACKUP_ROOT"
+  log_info "  - Tunnel user and restricted SSH policy: /home/$DEFAULT_TUNNEL_USER, $SSHD_CONFIG_PATH"
+  log_info "  - Use 'sudo ./uninstall.sh --purge-data' to remove the tunnel key and sshd policy."
 fi
 
 log_ok "CLIProxyAPI Account Manager uninstalled successfully."

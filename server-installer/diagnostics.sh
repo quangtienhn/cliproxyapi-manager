@@ -40,20 +40,46 @@ echo ""
 # 3. Port & Listening Sockets
 echo "--- 3. PORT & NETWORK LISTENERS ---"
 if command -v ss >/dev/null 2>&1; then
-  echo "Checking port $DEFAULT_PORT listeners (Account Manager):"
-  ss -tulpn 2>/dev/null | grep -E ":$DEFAULT_PORT\b" || echo "Port $DEFAULT_PORT is not bound or not accessible"
-  echo "Checking port 8317 listeners (CLIProxyAPI):"
-  ss -tulpn 2>/dev/null | grep -E ":8317\b" || echo "Port 8317 is not bound or not accessible"
+  AM_LISTENERS=$(ss -ltn 2>/dev/null | awk -v p=":${DEFAULT_PORT}" '$4 ~ p"$" {print $4}')
+  if [[ -z "$AM_LISTENERS" ]]; then
+    echo "Account Manager (port $DEFAULT_PORT): not listening"
+    echo "  Action: systemctl status $DEFAULT_AM_SERVICE"
+  else
+    echo "Account Manager (port $DEFAULT_PORT) listeners:"
+    printf '  %s\n' "$AM_LISTENERS"
+    if printf '%s\n' "$AM_LISTENERS" | grep -qE '^(0\.0\.0\.0|\*|\[::\]):'; then
+      echo "  [WARN] Account Manager is exposed on a wildcard address. Expected 127.0.0.1 only."
+      echo "  Action: set HOST=127.0.0.1 in $DEFAULT_CONFIG_DIR/manager.env and restart the service."
+    else
+      echo "  [OK] Account Manager is loopback-only."
+    fi
+  fi
+  CLI_LISTENERS=$(ss -ltn 2>/dev/null | awk '$4 ~ ":8317$" {print $4}')
+  if [[ -z "$CLI_LISTENERS" ]]; then
+    echo "CLIProxyAPI (port 8317): not listening"
+  else
+    echo "CLIProxyAPI (port 8317) listeners:"
+    printf '  %s\n' "$CLI_LISTENERS"
+    if printf '%s\n' "$CLI_LISTENERS" | grep -qE '^(0\.0\.0\.0|\*|\[::\]):'; then
+      echo "  [WARN] CLIProxyAPI is reachable on a wildcard address. Management API should be loopback-only."
+    fi
+  fi
 else
-  echo "ss utility not found"
+  echo "ss utility not found; skipping listener inspection"
 fi
 echo ""
 
 # 4. Account Manager Health Check Endpoint
 echo "--- 4. HEALTH CHECK STATUS ---"
 if command -v curl >/dev/null 2>&1; then
-  HEALTH_OUT=$(curl -s "http://127.0.0.1:$DEFAULT_PORT/api/health" 2>/dev/null || echo "Connection refused / failed")
+  HEALTH_OUT=$(curl -s --max-time 3 "http://127.0.0.1:$DEFAULT_PORT/api/health" 2>/dev/null || echo "Connection refused / failed")
   echo "Local Health Endpoint: $HEALTH_OUT"
+  if [[ "$HEALTH_OUT" == *'"status":"healthy"'* ]]; then
+    echo "  [OK] Account Manager process responds."
+  else
+    echo "  [WARN] Account Manager did not report healthy."
+    echo "  Action: inspect journalctl -u $DEFAULT_AM_SERVICE and confirm HOST/PORT in manager.env."
+  fi
 else
   echo "curl not available"
 fi
@@ -75,8 +101,24 @@ TUNNEL_AUTH_FILE="/home/$DEFAULT_TUNNEL_USER/.ssh/authorized_keys"
 if [[ -f "$TUNNEL_AUTH_FILE" ]]; then
   echo "Tunnel user '$DEFAULT_TUNNEL_USER' authorized_keys entries:"
   safe_cat_redacted "$TUNNEL_AUTH_FILE"
+  if grep -E "^command=" "$TUNNEL_AUTH_FILE" | grep -q "no-port-forwarding"; then
+    echo "  [WARN] Legacy v1.0.0 restriction found (no-port-forwarding blocks the tunnel)."
+    echo "  Action: run 'cliproxy-manager update' to migrate, or re-install with --setup-tunnel-user."
+  fi
+  if ! grep -q "permitopen=\"127.0.0.1:$DEFAULT_PORT\"" "$TUNNEL_AUTH_FILE" 2>/dev/null; then
+    echo "  [INFO] No permitopen restriction for 127.0.0.1:$DEFAULT_PORT found for the tunnel user."
+  fi
 else
   echo "No authorized_keys found for tunnel user '$DEFAULT_TUNNEL_USER'"
+  echo "  Action: run 'sudo ./install.sh --setup-tunnel-user --tunnel-pubkey \"<pubkey>\"'."
+fi
+
+echo "Per-user sshd forwarding policy:"
+if tunnel_sshd_policy_present "$DEFAULT_TUNNEL_USER"; then
+  echo "  [OK] Match User $DEFAULT_TUNNEL_USER policy is present in $SSHD_CONFIG_PATH."
+else
+  echo "  [INFO] No managed per-user sshd policy found."
+  echo "  Action: update or reinstall to add AllowTcpForwarding local / PermitListen none for the tunnel user."
 fi
 
 echo ""

@@ -1,7 +1,7 @@
 name: CLIProxyAPI Account Manager Tunnel
-version: "1.0.0"
+version: "1.0.1"
 slug: cliproxyapi_am_tunnel
-description: Secure SSH tunnel to the Account Manager, exposed only through HAOS Ingress
+description: Secure SSH tunnel to the CLIProxyAPI Account Manager, exposed only through Home Assistant Ingress
 url: https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer
 arch:
   - amd64
@@ -14,6 +14,7 @@ ingress_port: 8080
 ingress_entry: /
 panel_icon: mdi:account-key
 panel_title: Account Manager
+backup: cold
 watchdog: http://[HOST]:[PORT:8080]/healthz
 options:
   server_host: ""

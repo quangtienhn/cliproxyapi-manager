@@ -47,12 +47,28 @@ if [[ -d "$DEFAULT_AUTH_DIR" ]]; then
   chmod -R 0600 "$TARGET_BACKUP/auths"/* 2>/dev/null || true
 fi
 
-# 3. Back up Systemd Service Unit
+# 3. Back up tunnel SSH material for operator reference. Restore does not
+# write these files back automatically; they let an administrator rebuild the
+# restricted access after disaster recovery.
+TUNNEL_AUTH_FILE="/home/$DEFAULT_TUNNEL_USER/.ssh/authorized_keys"
+if [[ -f "$TUNNEL_AUTH_FILE" ]]; then
+  mkdir -p "$TARGET_BACKUP/ssh"
+  cp -a "$TUNNEL_AUTH_FILE" "$TARGET_BACKUP/ssh/authorized_keys"
+  chmod 0600 "$TARGET_BACKUP/ssh/authorized_keys"
+fi
+if [[ -f "${SSHD_CONFIG_PATH:-/etc/ssh/sshd_config}" ]]; then
+  mkdir -p "$TARGET_BACKUP/ssh"
+  awk '/# BEGIN cliproxyapi-account-manager tunnel policy/,/# END cliproxyapi-account-manager tunnel policy/' \
+    "${SSHD_CONFIG_PATH:-/etc/ssh/sshd_config}" > "$TARGET_BACKUP/ssh/sshd_policy.conf" 2>/dev/null || true
+  chmod 0600 "$TARGET_BACKUP/ssh/sshd_policy.conf"
+fi
+
+# 4. Back up Systemd Service Unit
 if [[ -f "/etc/systemd/system/${DEFAULT_AM_SERVICE}.service" ]]; then
   cp -a "/etc/systemd/system/${DEFAULT_AM_SERVICE}.service" "$TARGET_BACKUP/"
 fi
 
-# 4. Generate Metadata & Checksums
+# 5. Generate Metadata & Checksums
 cat << EOF > "$TARGET_BACKUP/metadata.env"
 TIMESTAMP=${TS}
 APP_VERSION=v1.0.1

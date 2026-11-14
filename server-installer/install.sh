@@ -53,7 +53,7 @@ if [[ "$(id -u)" -ne 0 && "$DRY_RUN" == "false" && "${INSTALLER_TEST_MODE:-0}" !
 fi
 
 echo "=================================================================="
-echo "    CLIProxyAPI Account Manager - Easy Installer v1.0.0          "
+echo "    CLIProxyAPI Account Manager - Easy Installer v1.0.1          "
 echo "=================================================================="
 
 # 1. Prerequisites Check
@@ -170,18 +170,16 @@ find "$DEFAULT_APP_DIR" -type f -exec chmod 0644 {} +
 # 6. Configure Environment and Secrets
 log_info "[6/7] Managing configuration and Management API secrets..."
 if [[ ! -f "$DEFAULT_CONFIG_DIR/manager.env" ]]; then
-  NEW_SECRET=$(generate_random_secret 32)
   if [[ -f "$TEMPLATES_DIR/manager.env.template" ]]; then
     cp "$TEMPLATES_DIR/manager.env.template" "$DEFAULT_CONFIG_DIR/manager.env"
   else
     cat << EOF > "$DEFAULT_CONFIG_DIR/manager.env"
 PORT=8320
-MANAGEMENT_API_URL=http://127.0.0.1:8317/management
-MANAGEMENT_API_KEY=${NEW_SECRET}
+HOST=127.0.0.1
+CLIPROXYAPI_URL=http://127.0.0.1:8317
 AUTH_DIR=/var/lib/cliproxyapi/auths
 EOF
   fi
-  sed -i "s/your-secure-management-key-here/${NEW_SECRET}/" "$DEFAULT_CONFIG_DIR/manager.env"
   if [[ "${INSTALLER_TEST_MODE:-0}" != "1" ]]; then
     chown root:cliproxyapi "$DEFAULT_CONFIG_DIR/manager.env"
   fi
@@ -191,10 +189,14 @@ else
   log_ok "Preserved existing configuration at $DEFAULT_CONFIG_DIR/manager.env"
 fi
 
+# v1.0.0 installations may still pin HOST=0.0.0.0. Force loopback-only.
+enforce_loopback_bind "$DEFAULT_CONFIG_DIR/manager.env" || log_warn "Could not enforce loopback binding; verify HOST=127.0.0.1 manually."
+
 # Synchronize secret with CLIProxyAPI if present
 if [[ -f "$DEFAULT_APP_DIR/src/sync_secret.js" && -f "$DEFAULT_CLIPROXY_CONFIG" ]]; then
   log_info "Synchronizing Management API secret with CLIProxyAPI config..."
-  node "$DEFAULT_APP_DIR/src/sync_secret.js" || log_warn "Secret synchronization exited with non-zero status"
+  node "$DEFAULT_APP_DIR/src/sync_secret.js" "$DEFAULT_CLIPROXY_CONFIG" "$DEFAULT_CONFIG_DIR/manager.env" \
+    || log_warn "Secret synchronization exited with non-zero status (verify CLIPROXYAPI_MANAGEMENT_KEY manually)"
 fi
 
 # Setup restricted tunnel user if requested
@@ -206,13 +208,30 @@ if [[ "$SETUP_TUNNEL_USER" == "true" ]]; then
   USER_SSH_DIR="/home/$DEFAULT_TUNNEL_USER/.ssh"
   mkdir -p "$USER_SSH_DIR"
   chmod 0700 "$USER_SSH_DIR"
-  chown "$DEFAULT_TUNNEL_USER:$DEFAULT_TUNNEL_USER" "$USER_SSH_DIR"
+  if [[ "${INSTALLER_TEST_MODE:-0}" != "1" ]]; then
+    chown "$DEFAULT_TUNNEL_USER:$DEFAULT_TUNNEL_USER" "$USER_SSH_DIR"
+  fi
 
+  USER_AUTH_FILE="$USER_SSH_DIR/authorized_keys"
   if [[ -n "$TUNNEL_PUBKEY" ]]; then
-    ENTRY=$(generate_restricted_authorized_key_entry "$TUNNEL_PUBKEY" "127.0.0.1" "$DEFAULT_PORT")
-    echo "$ENTRY" > "$USER_SSH_DIR/authorized_keys"
-    chmod 0600 "$USER_SSH_DIR/authorized_keys"
-    chown "$DEFAULT_TUNNEL_USER:$DEFAULT_TUNNEL_USER" "$USER_SSH_DIR/authorized_keys"
+    append_restricted_authorized_key "$USER_AUTH_FILE" "$TUNNEL_PUBKEY" "127.0.0.1" "$DEFAULT_PORT" \
+      || { log_err "Failed to install tunnel public key."; exit 1; }
+  fi
+
+  # Migrate any v1.0.0 legacy key already present for this target.
+  if [[ -f "$USER_AUTH_FILE" ]]; then
+    migrate_authorized_keys_file "$USER_AUTH_FILE" "127.0.0.1" "$DEFAULT_PORT" \
+      || log_warn "Legacy authorized_keys migration did not complete; review $USER_AUTH_FILE"
+    if [[ "${INSTALLER_TEST_MODE:-0}" != "1" ]]; then
+      chown "$DEFAULT_TUNNEL_USER:$DEFAULT_TUNNEL_USER" "$USER_AUTH_FILE"
+    fi
+  fi
+
+  # Server-side forwarding lockdown for this user only.
+  install_tunnel_sshd_policy "$DEFAULT_TUNNEL_USER" "127.0.0.1" "$DEFAULT_PORT" \
+    || log_warn "Per-user sshd policy was not installed. The key-level permitopen/permitlisten restrictions remain active."
+
+  if [[ -f "$USER_AUTH_FILE" ]]; then
     log_ok "Restricted SSH tunnel authorized_keys configured for $DEFAULT_TUNNEL_USER"
   fi
 fi

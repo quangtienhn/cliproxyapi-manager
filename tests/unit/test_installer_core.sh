@@ -58,7 +58,7 @@ assert_match 'command="/bin/false"' "$ENTRY" "Restricted key entry includes comm
 assert_match 'no-agent-forwarding' "$ENTRY" "Restricted key entry denies agent forwarding"
 assert_match 'no-pty' "$ENTRY" "Restricted key entry denies pty"
 assert_match 'permitopen="127.0.0.1:8320"' "$ENTRY" "Restricted key permits forwarding only to 127.0.0.1:8320"
-assert_match 'permitlisten="127.0.0.1:1"' "$ENTRY" "Restricted key forbids remote reverse forwarding"
+assert_match 'permitlisten="127.0.0.1:1"' "$ENTRY" "Restricted key includes defense-in-depth permitlisten"
 assert_match 'AAAAC3NzaC1lZDI1NTE5' "$ENTRY" "Restricted key preserves original public key"
 
 # Test 4: Secret redaction in diagnostics

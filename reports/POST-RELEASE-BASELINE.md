@@ -1,5 +1,6 @@
 # POST-RELEASE BASELINE & INITIAL DISCOVERY REPORT
 **Release Tag:** `v1.0.0`  
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. It describes the state *before* the v1.0.1 fixes. For current status and evidence, see [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md). References to specific private hostnames or addresses have been removed; production systems were never accessed or modified.
 **Target Repository:** `quangtienhn/cliproxyapi-account-manager-easy-installer`  
 **Release Checksum:** `3e1d5fe93a86ceb6b6e8982d816e8ec1bdf9a053b127c01fbef458e113f878b6`  
 **Baseline Date:** 2026-11-11  
@@ -40,7 +41,7 @@ The initial release marked several capabilities as "VERIFIED" which, upon strict
 | Cross-Platform Debian / Ubuntu | VERIFIED | **Unit / bash syntax check only.** Not tested against actual package managers (`apt`), real `systemd` service lifecycle, or varying OS distributions. |
 | HAOS Ingress Reverse Proxy | VERIFIED | **Regex & mock HTTP server test only.** Not tested with concurrent streams, upstream error handling under live load, or end-to-end SSH tunnel. |
 | Docker Multi-Arch Build | NOT VERIFIED | Needs build & runtime verification on isolated containers. |
-| Production Systems Safety | VERIFIED | Guaranteed untouched. Production TX3 and HAOS remained completely isolated. |
+| Production Systems Safety | VERIFIED | Guaranteed untouched. Reference production hardware and the Home Assistant OS instance remained completely isolated and were not modified. |
 
 ---
 

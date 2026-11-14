@@ -1,4 +1,6 @@
 # PRE-MERGE ACCEPTANCE & FINAL CERTIFICATION REPORT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. v1.0.1 replaced the `permitlisten`-only remote-forwarding control with a per-user `sshd` `Match` block (`PermitListen none`), added health-gated migrations, and re-ran the matrix. See [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md) for current status.
+
 **Target Release Candidate:** `v1.0.1`  
 **Patch Branch:** `fix/post-release-verification-v1.0.0`  
 **Target Repository:** `quangtienhn/cliproxyapi-account-manager-easy-installer`  
@@ -31,7 +33,7 @@ In strict adherence to the non-fabrication policy, the 7 platform targets were e
    - Verified via `test_loopback_bind.js` on IPv4 (`127.0.0.1`) and IPv6 (`::1`). No wildcard binding to `0.0.0.0` or `[::]`.
 2. **StreamLocal & Remote Forwarding Invariant:**
    - StreamLocal (Unix domain socket forwarding) to `/var/run/docker.sock` is unconditionally rejected by `sshd` when `permitopen` specifies IP:port.
-   - Remote reverse forwarding to useful ports or external interfaces is rejected by `permitlisten="127.0.0.1:1"`.
+   - v1.0.1 enforces remote reverse forwarding with `PermitListen none` in a per-user `Match User` block; `permitlisten="127.0.0.1:1"` is retained only as defence in depth.
 3. **Upgrade Migration Invariant:**
    - `update.sh` automatically migrates legacy v1.0.0 `authorized_keys` lines containing `no-port-forwarding`.
    - Preserves non-product keys byte-for-byte and is 100% idempotent.

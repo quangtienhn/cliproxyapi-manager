@@ -1,0 +1,98 @@
+name: Bug report
+description: Report a reproducible defect in the installer, CLI, or Home Assistant add-on.
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not include secrets, private keys, OAuth tokens, real hostnames, public IPs, or production logs.**
+        For a security vulnerability, use the private reporting link instead of this form.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: I removed secrets, private keys, tokens, hostnames, and IP addresses from everything below.
+          required: true
+        - label: This is not a security vulnerability (those go through private reporting).
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Installer version
+      description: Output of `sudo cliproxy-manager check-update`, or the commit/tag you used.
+      placeholder: "1.0.1 / commit abc1234"
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Server installer (install.sh)
+        - Update / rollback (update.sh)
+        - Backup / restore
+        - Diagnostics
+        - Uninstall
+        - Home Assistant add-on
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Server platform
+      description: Distribution, version, architecture, and virtualisation.
+      placeholder: "Debian 12, amd64, Proxmox VM"
+    validations:
+      required: true
+  - type: input
+    id: haos
+    attributes:
+      label: Home Assistant version (if add-on related)
+      placeholder: "2026.11.0 / HAOS 17.1"
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands and order. Do not include secrets.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the exit code and the first relevant error line.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized diagnostics
+      description: Paste `sudo cliproxy-manager check` or selected log lines after removing hostnames and addresses. Never paste the full environment or tokens.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I understand the maintainers cannot reproduce issues without enough sanitized detail.
+          required: true

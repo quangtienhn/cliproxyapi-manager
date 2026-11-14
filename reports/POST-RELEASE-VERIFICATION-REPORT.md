@@ -1,4 +1,6 @@
 # POST-RELEASE VERIFICATION & FINAL ACCEPTANCE REPORT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. It records the v1.0.0 defect and the first fix attempt. The remote-forwarding conclusion below (that `permitlisten="127.0.0.1:1"` alone fully blocks `-R`) was **superseded in v1.0.1**: a per-user `sshd` `Match` block with `PermitListen none` is now the authoritative control. See [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md) and [SSH-TUNNEL-SECURITY-REPORT.md](SSH-TUNNEL-SECURITY-REPORT.md).
+
 **Product:** CLIProxyAPI Account Manager Easy Installer  
 **Release Tag Audited:** `v1.0.0` (Commit `6706176`)  
 **Fix Branch:** `fix/post-release-verification-v1.0.0` (Commit `4e92edb`)  
@@ -27,7 +29,7 @@
 |---|---|---|---|
 | **SSH Tunnel** | Local Forwarding `127.0.0.1:8320` | **VERIFIED — End-to-end tested** | Tested on real OpenSSH daemon with curl traffic returning `200 OK` |
 | **SSH Tunnel** | Block Unauthorized Ports (`8321`) | **VERIFIED — End-to-end tested** | Port forward attempt rejected by sshd with error log |
-| **SSH Tunnel** | Reverse Remote Forwarding (`-R`) Blocked | **VERIFIED — End-to-end tested** | Blocked via `permitlisten="127.0.0.1:1"` (exit code 255) |
+| **SSH Tunnel** | Reverse Remote Forwarding (`-R`) Blocked | **PARTIALLY VERIFIED (superseded in v1.0.1)** | Originally attributed to `permitlisten="127.0.0.1:1"`; v1.0.1 additionally enforces `PermitListen none` in a `Match User` block. See [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md). |
 | **SSH Tunnel** | Shell & Remote Command Denied | **VERIFIED — End-to-end tested** | Forced `/bin/false` execution rejects shell commands |
 | **Server Installer** | Fresh Installation | **VERIFIED — Isolated integration tested** | Tested across 7 distro/arch permutations |
 | **Server Installer** | Idempotency & Re-run | **VERIFIED — Isolated integration tested** | Safe re-run without duplicate users or wiped config |
@@ -59,7 +61,8 @@
 ### Defect SEC-01 (Severity: CRITICAL / P0)
 - **Description:** In `server-installer/lib/installer_core.sh`, `generate_restricted_authorized_key_entry` produced `command="/bin/false",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding,permitopen="127.0.0.1:8320"`.
 - **Impact:** According to OpenSSH `sshd(8)`, `no-port-forwarding` unconditionally disables all TCP forwarding, overriding `permitopen`. Consequently, any tunnel attempt by the HAOS add-on failed with `refused local port forward`.
-- **Resolution:** Replaced `no-port-forwarding` with `permitlisten="127.0.0.1:1"`. This allows local forwarding to `127.0.0.1:8320` while completely forbidding reverse remote forwarding, shell commands, PTY, agent forwarding, and X11 forwarding.
+- **Resolution (v1.0.0 branch):** Replaced `no-port-forwarding` with `permitlisten="127.0.0.1:1"`. This restores local forwarding to `127.0.0.1:8320` and still forbids shell commands, PTY, agent forwarding, and X11 forwarding.
+- **v1.0.1 correction:** `permitlisten="127.0.0.1:1"` is retained only as defence in depth. OpenSSH allows a key holder to bind loopback port 1 if server policy permits it, so it is **not** a complete reverse-forwarding prohibition. v1.0.1 adds a per-user `Match User amtunnel` block with `AllowTcpForwarding local`, `AllowStreamLocalForwarding no`, `PermitOpen 127.0.0.1:8320`, and `PermitListen none`.
 - **Commit:** `4e92edb` on branch `fix/post-release-verification-v1.0.0`.
 
 ---
@@ -67,7 +70,7 @@
 ## E. Remaining Hardware Acceptance Tests
 To achieve 100% full bare-metal hardware certification:
 1. **Live HAOS Supervisor Add-on Installation:** Installing the add-on from a private Git repository directly inside the Home Assistant Add-on Store UI.
-2. **TX3 Native Systemd Service Boot:** Verifying physical boot on TX3 ARM64 hardware with live `nftables` enforcement.
+2. **Native ARM64 systemd boot:** Verifying physical boot on ARM64 hardware with live `nftables` enforcement. Not performed in this audit environment; see [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md).
 
 ---
 

@@ -19,6 +19,10 @@ manager.env
 *.key
 *.pem
 
+# Release artifacts attached to GitHub, never committed
+cliproxyapi-account-manager-easy-installer-v*.tar.gz
+cliproxyapi-account-manager-easy-installer-v*.tar.gz.sha256
+
 # OS & Editor artifacts
 .DS_Store
 Thumbs.db

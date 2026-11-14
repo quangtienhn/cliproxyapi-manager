@@ -1,4 +1,6 @@
 # LIFECYCLE & FAILURE RECOVERY VERIFICATION REPORT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. In v1.0.1, failed updates roll back and leave SSH access untouched, and `uninstall --purge-data` additionally removes the managed tunnel key and sshd policy. See `tests/test_update_rollback.sh` and [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md).
+
 **Target Workflows:** Backup, Restore, Update, Rollback, Uninstall  
 **Test Suite:** `tests/test_failure_recovery.sh` & `tests/integration/test_lifecycle.sh`  
 **Date:** 2026-11-11  

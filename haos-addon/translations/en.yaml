@@ -1,0 +1,29 @@
+configuration:
+  server_host:
+    name: SSH server host
+    description: >-
+      Hostname or IP address of the Debian/Ubuntu server that runs CLIProxyAPI
+      and the Account Manager. Example: 192.0.2.10 or server.example.com.
+  server_port:
+    name: SSH port
+    description: TCP port of the SSH service on the server. Usually 22.
+  server_user:
+    name: SSH tunnel user
+    description: >-
+      Dedicated restricted account created by the server installer.
+      Default: amtunnel. Do not use root or your personal administrator account.
+  remote_host:
+    name: Account Manager host (advanced)
+    description: >-
+      Address the SSH server connects to. Keep 127.0.0.1 unless the Account
+      Manager runs in a container or on another host. The restricted key only
+      permits 127.0.0.1.
+  remote_port:
+    name: Account Manager port (advanced)
+    description: TCP port of the Account Manager on the server. Default: 8320.
+  host_key:
+    name: SSH host public key
+    description: >-
+      Public host key of your server, pinned to prevent man-in-the-middle
+      attacks. Paste the whole line from /etc/ssh/ssh_host_ed25519_key.pub
+      (or ssh_host_rsa_key.pub). Required. Never disable host key checking.

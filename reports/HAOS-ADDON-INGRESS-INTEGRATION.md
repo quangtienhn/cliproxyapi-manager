@@ -1,4 +1,6 @@
 # HAOS ADD-ON & INGRESS REVERSE PROXY INTEGRATION REPORT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. v1.0.1 replaced the inline host-key check with `rootfs/hostkey.mjs`, added strict fail-closed parsing, `UpdateHostKeys=no`, `VerifyHostKeyDNS=no`, cold backups, and removed private deployment fallbacks. The proxy test now allocates dynamic ports and a temporary data directory.
+
 **Add-on Slug:** `cliproxyapi_am_tunnel`  
 **Target Environment:** Home Assistant OS Supervised Add-on with Ingress  
 **Verification Level:** Isolated Integration Testing & Concurrency Load Test  

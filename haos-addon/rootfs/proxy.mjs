@@ -26,8 +26,8 @@ function readPubKey() {
 function readTarget() {
   try {
     const o = JSON.parse(fs.readFileSync(`${DATA_DIR}/options.json`, 'utf8'));
-    const host = o.server_host || o.tx3_host || null;
-    const user = o.server_user || o.tx3_user || 'amtunnel';
+    const host = o.server_host || null;
+    const user = o.server_user || 'amtunnel';
     const remoteHost = o.remote_host || '127.0.0.1';
     const remotePort = o.remote_port || 8320;
     return {

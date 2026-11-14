@@ -1,4 +1,6 @@
 # SSH TUNNEL SECURITY & END-TO-END VERIFICATION REPORT
+> **Historical document (2026-11-11, v1.0.0 era).** Kept for audit trail. The fix described here was the first v1.0.0 patch attempt. **v1.0.1 supersedes its remote-forwarding conclusion:** `permitlisten="127.0.0.1:1"` is defence in depth only, not a complete `-R` prohibition. The authoritative control is now a per-user `sshd` `Match` block with `PermitListen none`. Current evidence is in [PUBLIC-RELEASE-READINESS.md](PUBLIC-RELEASE-READINESS.md).
+
 **Target Component:** SSH Tunnel & Key Restriction Architecture  
 **Test Environment:** Isolated OpenSSH Daemon (OpenSSH_for_Windows 10.4p1 / OpenSSH 10.5p1 Client)  
 **Date:** 2026-11-11  
@@ -39,7 +41,7 @@ command="/bin/false",no-agent-forwarding,no-pty,no-user-rc,no-X11-forwarding,per
 | **Remote Command Execution (`whoami`)** | Denied | Forced-command `/bin/false` executed, user command ignored | RC=1 | **PASS** |
 | **PTY Allocation** | Denied | `no-pty` enforced | TTY allocation refused | **PASS** |
 | **Agent & X11 Forwarding** | Denied | `no-agent-forwarding`, `no-X11-forwarding` | Channel requests refused | **PASS** |
-| **Reverse Remote Forwarding (`-R`)** | Denied | `permitlisten="127.0.0.1:1"` rejects any port listener | RC=255: *Error: remote port forwarding failed for listen port 28320* | **PASS** |
+| **Reverse Remote Forwarding (`-R`)** | Denied | Key option `permitlisten="127.0.0.1:1"` rejects other ports; v1.0.1 adds `PermitListen none` in a `Match` block | RC=255: *Error: remote port forwarding failed for listen port 28320* | **PASS (v1.0.1 hardening)** |
 
 ---
 

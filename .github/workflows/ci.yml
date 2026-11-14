@@ -1,40 +1,122 @@
-name: CI Validation and Security Gate
+name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  tests:
+    name: Shell, Node, and repository tests
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          node-version: '20'
+          persist-credentials: false
 
-      - name: Run Core Installer Unit Tests
-        run: |
-          chmod +x server-installer/install.sh server-installer/backup.sh server-installer/restore.sh server-installer/diagnostics.sh server-installer/update.sh server-installer/uninstall.sh
-          chmod +x tests/unit/*.sh tests/integration/*.sh
-          bash tests/unit/test_installer_core.sh
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
 
-      - name: Run HAOS Ingress Proxy Unit Tests
+      - name: Install static analysis tools
         run: |
-          node tests/unit/test_haos_proxy.js
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends shellcheck openssh-client
 
-      - name: Run Integration Lifecycle Tests
+      - name: Make scripts executable
         run: |
-          bash tests/integration/test_lifecycle.sh
+          chmod +x server-installer/*.sh server-installer/bin/cliproxy-manager
+          chmod +x tests/*.sh tests/unit/*.sh tests/integration/*.sh
+          chmod +x haos-addon/rootfs/run.sh
 
-      - name: Security Audit & Secret Scanning
+      - name: ShellCheck (errors block, warnings reported)
         run: |
-          # Verify no secrets committed in repository files
-          ! grep -rE "gho_[A-Za-z0-9_]{20,}" --exclude-dir=.git .
-          ! grep -rE "AKIA[0-9A-Z]{16}" --exclude-dir=.git .
-          ! grep -rE "-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----" --exclude-dir=.git .
+          mapfile -t files < <(find . -path ./.git -prune -o -name '*.sh' -print; echo ./server-installer/bin/cliproxy-manager)
+          shellcheck --version
+          shellcheck -S error "${files[@]}"
+          shellcheck -S warning -f gcc "${files[@]}" || true
+
+      - name: JavaScript syntax
+        run: |
+          while IFS= read -r file; do node --check "$file"; done < <(
+            find tests haos-addon -type f \( -name '*.js' -o -name '*.mjs' \)
+          )
+
+      - name: Run test suite
+        run: bash tests/run_all.sh
+
+  ssh-e2e:
+    name: Real OpenSSH forwarding restrictions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+
+      - name: Install OpenSSH server
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openssh-server curl
+
+      - name: Create isolated sshd fixtures
+        run: |
+          set -euo pipefail
+          FIX="$RUNNER_TEMP/sshd"
+          mkdir -p "$FIX"
+          sudo mkdir -p /run/sshd
+          ssh-keygen -q -t ed25519 -N '' -f "$FIX/client_key"
+          ssh-keygen -q -t ed25519 -N '' -f "$FIX/host_key"
+          : > "$FIX/authorized_keys"
+          cat > "$FIX/sshd_sudo" <<'EOF'
+          #!/bin/sh
+          exec sudo -n /usr/sbin/sshd "$@"
+          EOF
+          chmod +x "$FIX/sshd_sudo"
+
+      - name: Run real sshd E2E
+        env:
+          SSHD_BIN: ${{ runner.temp }}/sshd/sshd_sudo
+          SSHD_CLIENT_KEY: ${{ runner.temp }}/sshd/client_key
+          SSHD_HOST_KEY: ${{ runner.temp }}/sshd/host_key
+          SSHD_USER: runner
+          SSHD_PORT: "2222"
+        run: |
+          chmod +x tests/test_ssh_hardening.sh
+          bash tests/test_ssh_hardening.sh
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

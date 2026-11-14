@@ -37,51 +37,26 @@ log "SSH_FINGERPRINT=$(ssh-keygen -lf "$PUB" | awk '{print $2}')"
 # --- Host key verification & pinning ---
 write_known_hosts() {
   host="$(read_opt server_host)"
-  [ -n "$host" ] || host="$(read_opt tx3_host)"
   port="$(read_opt server_port)"
-  [ -n "$port" ] || port="$(read_opt tx3_port)"
   raw="$(read_opt host_key)"
   [ -n "$port" ] || port=22
   [ -n "$host" ] || return 1
   [ -n "$raw" ] || return 1
 
-  printf '%s\n' "$raw" | node -e '
-    const fs = require("fs");
-    const host = process.argv[1];
-    const port = String(process.argv[2] || "22");
-    const outFile = process.argv[3];
-    const name = port === "22" ? host : "[" + host + "]:" + port;
-    const types = /^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|sk-ssh-ed25519@openssh.com)$/;
-    const out = [];
-    for (const line of fs.readFileSync(0, "utf8").split(/\r?\n/)) {
-      const t = line.trim();
-      if (!t || t.startsWith("#")) continue;
-      const parts = t.split(/\s+/);
-      const keyParts = types.test(parts[0]) ? parts : parts.slice(1);
-      if (keyParts.length < 2 || !types.test(keyParts[0])) {
-        console.error("invalid host key line");
-        process.exit(2);
-      }
-      if (!/^[A-Za-z0-9+/=]+$/.test(keyParts[1])) {
-        console.error("invalid host key encoding");
-        process.exit(2);
-      }
-      out.push(name + " " + keyParts.join(" "));
-    }
-    if (out.length === 0) process.exit(2);
-    fs.writeFileSync(outFile, out.join("\n") + "\n", { mode: 0o600 });
-  ' "$host" "$port" "$KNOWN.tmp" || { rm -f "$KNOWN.tmp"; return 1; }
+  printf '%s\n' "$raw" | node /app/hostkey.mjs "$host" "$port" "$KNOWN.tmp" \
+    || { rm -f "$KNOWN.tmp"; return 1; }
   mv "$KNOWN.tmp" "$KNOWN" || { rm -f "$KNOWN.tmp"; return 1; }
   chmod 600 "$KNOWN"
+  log "Pinned host key fingerprint: $(ssh-keygen -lf "$KNOWN" | awk '{print $2}')"
 }
 
 # --- Tunnel supervisor loop ---
 tunnel_loop() {
   while :; do
-    host="$(read_opt server_host)"; [ -n "$host" ] || host="$(read_opt tx3_host)"
-    port="$(read_opt server_port)"; [ -n "$port" ] || port="$(read_opt tx3_port)"
+    host="$(read_opt server_host)"
+    port="$(read_opt server_port)"
     [ -n "$port" ] || port=22
-    user="$(read_opt server_user)"; [ -n "$user" ] || user="$(read_opt tx3_user)"
+    user="$(read_opt server_user)"
     [ -n "$user" ] || user=amtunnel
     rhost="$(read_opt remote_host)"; [ -n "$rhost" ] || rhost=127.0.0.1
     rport="$(read_opt remote_port)"; [ -n "$rport" ] || rport=8320
@@ -93,9 +68,13 @@ tunnel_loop() {
     fi
 
     if ! write_known_hosts; then
-      log "SSH host key not configured or invalid; paste your server host key into option 'host_key'"
+      log "SSH host key missing or invalid. Paste the server host public key into add-on option 'host_key' (for example the contents of /etc/ssh/ssh_host_ed25519_key.pub)."
       sleep 15
       continue
+    fi
+
+    if [ "$rhost" != "127.0.0.1" ] && [ "$rhost" != "localhost" ] && [ "$rhost" != "::1" ]; then
+      log "WARNING: remote_host=${rhost} is not a loopback address. The server-side tunnel key only permits 127.0.0.1:${rport}; the connection will fail."
     fi
 
     log "Connecting ${user}@${host}:${port} -> ${rhost}:${rport} (local 127.0.0.1:${UPSTREAM_PORT})"
@@ -111,6 +90,8 @@ tunnel_loop() {
       -o StrictHostKeyChecking=yes \
       -o UserKnownHostsFile="$KNOWN" \
       -o GlobalKnownHostsFile=/dev/null \
+      -o UpdateHostKeys=no \
+      -o VerifyHostKeyDNS=no \
       -o ExitOnForwardFailure=yes \
       -o ServerAliveInterval=15 \
       -o ServerAliveCountMax=3 \
