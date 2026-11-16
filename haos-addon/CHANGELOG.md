@@ -3,6 +3,12 @@
 ## 1.0.1 - Unreleased
 
 ### Fixed
+- HAOS add-on startup: migrated to Home Assistant base image with s6-overlay service layout.
+- Set `init: false` so s6 manages PID 1; removed direct `CMD` that triggered `s6-overlay-suexec: fatal: can only run as pid 1`.
+- Updated build base image to `ghcr.io/home-assistant/{arch}-base:3.20`.
+
+### Fixed (previous)
+- (prior 1.0.1 fixes retained)
 
 - Host key parsing is now strict and fails closed. Invalid key type, encoding, host, port, or empty input is rejected.
 - SSH now sets `UpdateHostKeys=no` and `VerifyHostKeyDNS=no`.
