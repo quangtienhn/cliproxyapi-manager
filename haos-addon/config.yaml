@@ -1,5 +1,5 @@
 name: CLIProxyAPI Manager Tunnel
-version: "1.0.1"
+version: "1.0.2"
 slug: cliproxyapi_am_tunnel
 description: Secure SSH tunnel to the CLIProxyAPI Manager, exposed only through Home Assistant Ingress
 url: https://github.com/quangtienhn/cliproxyapi-manager
@@ -8,7 +8,7 @@ arch:
   - aarch64
 startup: application
 boot: auto
-init: true
+init: false
 ingress: true
 ingress_port: 8080
 ingress_entry: /
