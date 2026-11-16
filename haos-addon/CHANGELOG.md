@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - Unreleased
+
+### Fixed
+- Dockerfile: moved inline comment off the `COPY rootfs /` line. Docker parsed the trailing comment as part of the source path (`ERROR: lstat /#: no such file or directory`).
+
 ## 1.0.2 - Unreleased
 
 ### Fixed
