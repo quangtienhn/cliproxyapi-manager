@@ -74,3 +74,14 @@ The add-on also declared no s6 service.
 ## Verdict
 
 Source-level checks PASS; on-device startup verification PENDING (user must run).
+
+## Security note (visibility)
+
+During final verification the repository was briefly observed as PUBLIC. It was
+immediately restored to PRIVATE using
+`gh repo edit ... --visibility private --accept-visibility-change-consequences`.
+No content was changed. The repository is PRIVATE at the time of this report.
+The user (owner) retains control of the final visibility switch.
+Repository visibility restored to PRIVATE.
+
+Source-level checks PASS; on-device startup verification PENDING (user must run).
