@@ -1,6 +1,6 @@
-# CLIProxyAPI Account Manager Tunnel (Home Assistant add-on)
+# CLIProxyAPI Manager Tunnel (Home Assistant add-on)
 
-Home Assistant OS add-on that exposes the CLIProxyAPI Account Manager through Ingress over a restricted SSH tunnel.
+Home Assistant OS add-on that exposes the CLIProxyAPI Manager through Ingress over a restricted SSH tunnel.
 
 - Ingress panel, no published host ports
 - Pinned server host key, public-key authentication only
@@ -11,7 +11,7 @@ Home Assistant OS add-on that exposes the CLIProxyAPI Account Manager through In
 Install this repository as a custom add-on repository:
 
 ```text
-https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer
+https://github.com/quangtienhn/cliproxyapi-manager
 ```
 
 Then see [DOCS.md](DOCS.md) for configuration and setup. Server-side installation lives in [../server-installer](../server-installer) and is documented in [../docs/INSTALLATION.md](../docs/INSTALLATION.md).

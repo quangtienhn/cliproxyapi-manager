@@ -1,6 +1,6 @@
-# CLIProxyAPI Account Manager Tunnel
+# CLIProxyAPI Manager Tunnel
 
-This add-on exposes the CLIProxyAPI Account Manager running on a separate Debian/Ubuntu server through a restricted SSH tunnel and the Home Assistant Ingress panel.
+This add-on exposes the CLIProxyAPI Manager running on a separate Debian/Ubuntu server through a restricted SSH tunnel and the Home Assistant Ingress panel.
 
 ## Requirements
 
@@ -34,7 +34,7 @@ Paste the entire line into `host_key`. The add-on does not trust unknown keys.
 3. Authorize it on the server:
 
    ```bash
-   cd cliproxyapi-account-manager-easy-installer/server-installer
+   cd cliproxyapi-manager/server-installer
    sudo bash install.sh --setup-tunnel-user \
      --tunnel-pubkey "ssh-ed25519 AAAA... amtunnel@haos"
    ```
@@ -71,4 +71,4 @@ Common causes:
 - wrong `server_host`/`server_port`;
 - server SSH unreachable from Home Assistant OS.
 
-Full guide: <https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer/blob/main/docs/TROUBLESHOOTING.md>
+Full guide: <https://github.com/quangtienhn/cliproxyapi-manager/blob/main/docs/TROUBLESHOOTING.md>

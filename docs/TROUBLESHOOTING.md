@@ -56,7 +56,7 @@ sudo journalctl -u cliproxyapi-account-manager -n 100 --no-pager
 Reinstall the application without touching config:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer/server-installer
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh
 ```
 
@@ -101,7 +101,7 @@ sudo grep -n '^CLIPROXYAPI_MANAGEMENT_KEY=' /etc/cliproxyapi-account-manager/man
 Re-run synchronization:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer/server-installer
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh
 ```
 
@@ -135,7 +135,7 @@ sudo cliproxy-manager restore
 A checksum error means the checkout is corrupted:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer
+cd cliproxyapi-manager
 git status
 git pull --ff-only
 sha256sum -c server-installer/embedded/SHA256SUMS-v1.0.1.txt
@@ -168,7 +168,7 @@ Timestamped backups are at `/etc/ssh/sshd_config.cliproxyapi.bak.*`. Do not copy
 ## HAOS add-on will not install or build
 
 - Confirm the repository URL is exactly
-  `https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer`.
+  `https://github.com/quangtienhn/cliproxyapi-manager`.
 - The repository root must contain `repository.yaml`; the add-on directory must contain `config.yaml`, `Dockerfile`, and `build.yaml`.
 - Supervisor builds need network access to Alpine and APK repositories.
 - Architecture must be `amd64` or `aarch64`; 32-bit ARM and i386 are unsupported.

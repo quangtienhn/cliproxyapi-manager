@@ -1,6 +1,6 @@
-# CLIProxyAPI Account Manager Easy Installer
+# CLIProxyAPI Manager
 
-A hardened installer and lifecycle manager for the **CLIProxyAPI Account Manager** web UI, with an optional **Home Assistant OS Ingress add-on** for secure remote access.
+A hardened installer and lifecycle manager for the **CLIProxyAPI Manager** web UI, with an optional **Home Assistant OS Ingress add-on** for secure remote access.
 
 The Account Manager is a small web application that sits next to [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) and lets you review accounts, start OAuth flows, and manage provider credentials. This repository installs it on Debian/Ubuntu, keeps it bound to loopback, and exposes it to Home Assistant through a restricted SSH tunnel - never through a public port.
 
@@ -42,8 +42,8 @@ No inbound port is opened for the Account Manager. The HAOS add-on never publish
 Prerequisites: a supported Debian/Ubuntu host, root or sudo, systemd, OpenSSH server, and Node.js 18 or newer. CLIProxyAPI should already be installed and running; see [docs/INSTALLATION.md](docs/INSTALLATION.md) for the full prerequisite list.
 
 ```bash
-git clone https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer.git
-cd cliproxyapi-account-manager-easy-installer/server-installer
+git clone https://github.com/quangtienhn/cliproxyapi-manager.git
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh --setup-tunnel-user
 ```
 
@@ -65,14 +65,14 @@ curl -s http://127.0.0.1:8320/api/health
 ### 2. Home Assistant OS add-on
 
 1. In Home Assistant: **Settings → Add-ons → Add-on Store → ⋮ → Repositories**.
-2. Add `https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer`.
-3. Install **CLIProxyAPI Account Manager Tunnel**.
+2. Add `https://github.com/quangtienhn/cliproxyapi-manager`.
+3. Install **CLIProxyAPI Manager Tunnel**.
 4. Configure `server_host`, `server_port`, `server_user` (`amtunnel`), and paste the server's SSH host public key into `host_key`.
 5. Start the add-on and copy the generated tunnel public key from its log.
 6. On the server, authorize that key:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer/server-installer
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh --setup-tunnel-user --tunnel-pubkey "ssh-ed25519 AAAA... amtunnel@haos"
 ```
 

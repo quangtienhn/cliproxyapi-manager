@@ -14,7 +14,7 @@ This project is licensed under the MIT License (see [LICENSE](LICENSE)). It uses
 
 The ISC license permits use, copying, modification, and distribution provided the copyright notice and permission notice are retained. The packaged dependency retains its upstream license metadata in `node_modules/yaml`.
 
-### CLIProxyAPI Account Manager bundle
+### CLIProxyAPI Manager bundle
 
 - License: MIT
 - Distribution: `server-installer/embedded/cliproxyapi-account-manager-v1.0.1.tar.gz`

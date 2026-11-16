@@ -22,8 +22,8 @@ You need:
 Clone:
 
 ```bash
-git clone https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer.git
-cd cliproxyapi-account-manager-easy-installer
+git clone https://github.com/quangtienhn/cliproxyapi-manager.git
+cd cliproxyapi-manager
 ```
 
 No package installation is required at the repository root. The embedded `yaml` dependency is already packaged.

@@ -171,7 +171,7 @@ Do not move or force-push an existing tag. If a release artifact is wrong, publi
 
 Create the GitHub release from the tag and attach:
 
-- `cliproxyapi-account-manager-easy-installer-v1.0.1.tar.gz`
+- `cliproxyapi-manager-v1.0.1.tar.gz`
 - `.sha256` file
 
 Release notes must include:

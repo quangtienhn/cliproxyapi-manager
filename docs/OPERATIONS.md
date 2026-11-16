@@ -1,6 +1,6 @@
 # Operations Guide
 
-Day-to-day operation, backup, restore, key rotation, and recovery for the CLIProxyAPI Account Manager.
+Day-to-day operation, backup, restore, key rotation, and recovery for the CLIProxyAPI Manager.
 
 All commands require root or `sudo`. `cliproxy-manager` is a symlink to `server-installer/bin/cliproxy-manager` inside the clone; if the clone moves, run the scripts directly.
 
@@ -49,7 +49,7 @@ sudo cliproxy-manager check-update
 Apply the update bundled with the checked-out repository:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer
+cd cliproxyapi-manager
 git pull --ff-only
 cd server-installer
 sudo bash update.sh
@@ -161,7 +161,7 @@ sudo cliproxy-manager restore /var/backups/cliproxyapi-account-manager/backup_20
 It does **not** restore the systemd unit, `authorized_keys`, or `sshd_config`. Restoring a service unit from an older release could undo hardening. If you need to rebuild the tunnel after a disk loss, re-run:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer/server-installer
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh --setup-tunnel-user --tunnel-pubkey "ssh-ed25519 AAAA... amtunnel@haos"
 ```
 

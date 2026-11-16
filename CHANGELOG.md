@@ -65,5 +65,5 @@ All notable changes to this project are documented in this file. The format foll
 - Remote forwarding was only partially restricted (fixed in 1.0.1).
 - `update.sh` did not fail on an unhealthy service (fixed in 1.0.1).
 
-[1.0.1]: https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer/releases/tag/v1.0.0
+[1.0.1]: https://github.com/quangtienhn/cliproxyapi-manager/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/quangtienhn/cliproxyapi-manager/releases/tag/v1.0.0

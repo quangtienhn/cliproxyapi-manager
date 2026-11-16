@@ -39,7 +39,7 @@ sudo grep -n 'no-port-forwarding' /home/amtunnel/.ssh/authorized_keys || true
 ## 3. Upgrade
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer
+cd cliproxyapi-manager
 git fetch --tags
 git checkout main
 git pull --ff-only
@@ -143,7 +143,7 @@ Treat this as an emergency action and re-upgrade as soon as the blocking issue i
 The add-on version is `1.0.1`. In Home Assistant:
 
 1. **Settings → Add-ons → Add-on Store → ⋮ → Check for updates**.
-2. Open **CLIProxyAPI Account Manager Tunnel** and update.
+2. Open **CLIProxyAPI Manager Tunnel** and update.
 3. Confirm your options survived: `server_host`, `server_port`, `server_user`, `remote_host`, `remote_port`, `host_key`.
 4. Start the add-on and check the log for a pinned fingerprint and a connected tunnel.
 

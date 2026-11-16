@@ -1,6 +1,6 @@
 # Home Assistant OS Add-on Guide
 
-The add-on **CLIProxyAPI Account Manager Tunnel** publishes the Account Manager inside Home Assistant through Ingress. It does not expose a port to your LAN or WAN.
+The add-on **CLIProxyAPI Manager Tunnel** publishes the Account Manager inside Home Assistant through Ingress. It does not expose a port to your LAN or WAN.
 
 - Add-on slug: `cliproxyapi_am_tunnel`
 - Architectures: `amd64`, `aarch64`
@@ -31,8 +31,8 @@ A Home Assistant add-on repository must have `repository.yaml` at the root and o
 
 1. **Settings → Add-ons → Add-on Store**.
 2. **⋮ → Repositories**.
-3. Add `https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer`.
-4. Refresh the store and install **CLIProxyAPI Account Manager Tunnel**.
+3. Add `https://github.com/quangtienhn/cliproxyapi-manager`.
+4. Refresh the store and install **CLIProxyAPI Manager Tunnel**.
 
 The Supervisor builds the image from `haos-addon/Dockerfile` using `build.yaml`. Build failures are usually caused by no network access to Alpine/APK or an unsupported architecture.
 
@@ -71,7 +71,7 @@ On first start, the add-on:
 Authorize the public key on the server:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer/server-installer
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh --setup-tunnel-user \
   --tunnel-pubkey "ssh-ed25519 AAAA... amtunnel@haos"
 ```

@@ -80,8 +80,8 @@ The management API must be on `127.0.0.1`, not `0.0.0.0`.
 ## 2. Install the Account Manager on the server
 
 ```bash
-git clone https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer.git
-cd cliproxyapi-account-manager-easy-installer/server-installer
+git clone https://github.com/quangtienhn/cliproxyapi-manager.git
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh --setup-tunnel-user
 ```
 
@@ -162,7 +162,7 @@ The first visit shows a setup form. Password minimum length is 8 characters. The
 3. Add:
 
    ```text
-   https://github.com/quangtienhn/cliproxyapi-account-manager-easy-installer
+   https://github.com/quangtienhn/cliproxyapi-manager
    ```
 
 4. Close the dialog and refresh the store.
@@ -171,7 +171,7 @@ The repository root contains `repository.yaml`; the add-on lives in `haos-addon/
 
 ### Install the add-on
 
-1. Find **CLIProxyAPI Account Manager Tunnel**.
+1. Find **CLIProxyAPI Manager Tunnel**.
 2. Open it and select **Install**.
 3. Wait for the Supervisor build to finish.
 
@@ -213,7 +213,7 @@ On first start the add-on generates an Ed25519 key pair under `/data` and logs o
 Copy the full `SSH_PUBLIC_KEY` value, then on the server:
 
 ```bash
-cd cliproxyapi-account-manager-easy-installer/server-installer
+cd cliproxyapi-manager/server-installer
 sudo bash install.sh --setup-tunnel-user \
   --tunnel-pubkey "ssh-ed25519 AAAA... amtunnel@haos"
 ```
