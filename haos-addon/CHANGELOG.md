@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.1 - Unreleased
+## 1.0.2 - Unreleased
 
 ### Fixed
 - HAOS add-on startup: migrated to Home Assistant base image with s6-overlay service layout.
