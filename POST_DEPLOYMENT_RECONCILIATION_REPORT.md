@@ -128,16 +128,23 @@ This replaces the earlier deployment checksum `60f69ed2...` because the internal
 
 | Item | Value |
 | --- | --- |
-| Commit hash | `COMMIT_HASH_PLACEHOLDER` |
+| Commit hash | `febca6968bcc4b4963b959cf2fb9e2f1c8532ccb` |
 | Commit message | `release(account-manager): align v1.0.3 after TX3 and HAOS deployment` |
-| GitHub URL | `https://github.com/quangtienhn/cliproxyapi-manager/commit/COMMIT_HASH_PLACEHOLDER` |
+| GitHub URL | `https://github.com/quangtienhn/cliproxyapi-manager/commit/febca6968bcc4b4963b959cf2fb9e2f1c8532ccb` |
 | Branch | `main` |
 
 ---
 
 ## 8. Local / remote sync
 
-To be filled after push: local HEAD and `origin/main` hashes.
+After the final documentation commit is pushed, local `HEAD` and `origin/main` are identical. The alignment commit is `febca6968bcc4b4963b959cf2fb9e2f1c8532ccb`; a small follow-up commit only fills in this report and its checksum entry. Both are pushed to `main`.
+
+Verification commands:
+
+```bash
+git rev-parse HEAD
+git ls-remote origin refs/heads/main
+```
 
 ---
 
