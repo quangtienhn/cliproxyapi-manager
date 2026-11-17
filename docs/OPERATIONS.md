@@ -76,7 +76,7 @@ Use a custom bundle only if you built and verified it yourself:
 sudo bash update.sh --tarball /path/to/verified-bundle.tar.gz
 ```
 
-Custom bundles are not checksum-verified against the shipped `SHA256SUMS-v1.0.1.txt`.
+Custom bundles are not checksum-verified against the shipped `SHA256SUMS-v1.0.3.txt`.
 
 ### Recovering from a failed update
 

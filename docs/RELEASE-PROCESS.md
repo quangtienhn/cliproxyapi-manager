@@ -28,7 +28,7 @@ Update the version in all of these places:
 | `CHANGELOG.md` | new section |
 | `server-installer/embedded/package.json` (inside bundle) | `version` |
 | `server-installer/embedded/package-lock.json` (inside bundle) | `version`, `packages[""].version` |
-| Bundle filename and `SHA256SUMS-v1.0.1.txt` | version in name |
+| Bundle filename and `SHA256SUMS-v1.0.3.txt` | version in name |
 | `server-installer/install.sh`, `update.sh`, `backup.sh` | version banners / bundle path (when the version changes) |
 
 The repository hygiene test asserts that the add-on version, changelog top entry, bundle filename, and checksum filename agree.
@@ -53,20 +53,20 @@ Build reproducibly:
 cd /path/to/cliproxyapi-account-manager
 # stage the runtime tree, set package versions, normalize mtimes
 tar --sort=name --owner=0 --group=0 --numeric-owner -czf \
-  cliproxyapi-account-manager-v1.0.1.tar.gz .
+  cliproxyapi-account-manager-v1.0.3.tar.gz .
 ```
 
 Place it at:
 
 ```text
-server-installer/embedded/cliproxyapi-account-manager-v1.0.1.tar.gz
+server-installer/embedded/cliproxyapi-account-manager-v1.0.3.tar.gz
 ```
 
 Regenerate the checksum:
 
 ```bash
 cd server-installer/embedded
-sha256sum cliproxyapi-account-manager-v1.0.1.tar.gz > SHA256SUMS-v1.0.1.txt
+sha256sum cliproxyapi-account-manager-v1.0.3.tar.gz > SHA256SUMS-v1.0.3.txt
 ```
 
 The checksum line must be `HASH *filename` or `HASH  filename`; the installer reads the first field.

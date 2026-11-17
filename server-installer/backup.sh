@@ -71,7 +71,7 @@ fi
 # 5. Generate Metadata & Checksums
 cat << EOF > "$TARGET_BACKUP/metadata.env"
 TIMESTAMP=${TS}
-APP_VERSION=v1.0.1
+APP_VERSION=v1.0.3
 BACKUP_TYPE=FULL
 OS=$(detect_os)
 ARCH=$(detect_architecture)

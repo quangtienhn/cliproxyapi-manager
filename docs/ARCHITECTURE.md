@@ -47,18 +47,19 @@ Bash scripts that provision the application and system integration:
 | `bin/cliproxy-manager` | Command dispatcher |
 | `embedded/` | Immutable application bundle, `yaml` dependency, checksums |
 
-### Account Manager (`embedded/cliproxyapi-account-manager-v1.0.1.tar.gz`)
+### Account Manager (`embedded/cliproxyapi-account-manager-v1.0.3.tar.gz`)
 
 A Node.js application (ES modules) with no build step. Runtime files:
 
-- `src/server.js` - HTTP server and API routes;
-- `src/auth.js`, `src/auth_store.js` - password hashing, sessions, CSRF;
+- `src/server.js` - HTTP server and API routes, including account deletion and Pause/Resume endpoints;
+- `src/auth.js`, `src/auth_store.js` - password hashing, sessions, CSRF, safe auth-file operations and persisted account state;
+- `src/account_status.js` - CLIProxyAPI Management API client for native credential disable/enable;
 - `src/audit.js` - JSON-lines audit log;
 - `src/providers/` - provider-specific OAuth flows;
 - `src/sync_secret.js` - copies `management.secret-key` from CLIProxyAPI YAML into `manager.env`;
 - `public/` - static UI.
 
-The bundle contains no `deploy/`, `docs/`, `tests/`, or repository documentation. It is versioned `1.0.1` and verified by `embedded/SHA256SUMS-v1.0.1.txt`.
+The bundle contains no `deploy/`, `docs/`, `tests/`, or repository documentation. It is versioned `1.0.3` and verified by `embedded/SHA256SUMS-v1.0.3.txt`.
 
 ### HAOS add-on (`haos-addon/`)
 

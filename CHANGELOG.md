@@ -17,6 +17,8 @@ All notable changes to this project are documented in this file. The format foll
 - **HAOS host key pinning was permissive.** A dedicated `hostkey.mjs` validates key type, encoding, host, and port; invalid input fails closed.
 - **The add-on could downgrade host keys.** `UpdateHostKeys=no` and `VerifyHostKeyDNS=no` are now set.
 - **The add-on still contained private deployment fallback options.** They were removed.
+- Gemini/Antigravity account deletion accepts legitimate email filename characters (`@`, `+`) while retaining strict path and credential-file validation.
+- Delete returns distinct validation, not-found, and filesystem errors; invalid targets do not trigger backups.
 
 ### Added
 
@@ -26,11 +28,14 @@ All notable changes to this project are documented in this file. The format foll
 - Public contribution, security, code-of-conduct, issue, and pull-request material.
 - Regression suites for key migration, sshd policy, update rollback, v1.0.0→v1.0.1 migration, host-key parsing, and real-service loopback binding.
 - Real OpenSSH end-to-end forwarding tests (20 checks) and real Account Manager socket tests (16 checks).
+- Per-account Pause / Resume through the CLIProxyAPI v8 Management API; paused credentials are disabled natively without deleting token files.
+- Account dashboard status badges and Active / Paused counters.
 - Repository hygiene tests covering icon dimensions, add-on metadata, version consistency, documentation links, and private-data markers.
 
 ### Changed
 
-- Embedded Account Manager bundle is runtime-only (`src/`, `public/`, package metadata, LICENSE), versioned `1.0.1`, with a new SHA-256 checksum.
+- Embedded Account Manager bundle is runtime-only (`src/`, `public/`, package metadata, LICENSE), updated to bundle v1.0.3 (application package v1.0.2), with a new SHA-256 checksum.
+- Installer and updater now select and verify the v1.0.3 runtime bundle; backup metadata records the matching version.
 - Diagnostics now detect wildcard binds, legacy `no-port-forwarding` keys, and a missing sshd policy, with remediation hints.
 - Backup includes the tunnel `authorized_keys` and managed sshd policy for disaster-recovery reference.
 - `uninstall.sh --purge-data` removes the managed tunnel key and sshd policy; default uninstall preserves SSH access and all data.

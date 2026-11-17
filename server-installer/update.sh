@@ -60,15 +60,15 @@ chmod 0600 "$DEFAULT_BACKUP_ROOT/latest_snapshot_path"
 log_ok "Pre-update snapshot created at $SNAPSHOT_DIR"
 
 # 2. Extract and Validate Target Tarball
-UPDATE_BUNDLE="${TARGET_TARBALL:-$SCRIPT_DIR/embedded/cliproxyapi-account-manager-v1.0.1.tar.gz}"
+UPDATE_BUNDLE="${TARGET_TARBALL:-$SCRIPT_DIR/embedded/cliproxyapi-account-manager-v1.0.3.tar.gz}"
 if [[ ! -f "$UPDATE_BUNDLE" ]]; then
   log_err "Update tarball not found: $UPDATE_BUNDLE"
   exit 1
 fi
 
 # Verify the embedded bundle checksum when using the shipped bundle.
-if [[ -z "$TARGET_TARBALL" && -f "$SCRIPT_DIR/embedded/SHA256SUMS-v1.0.1.txt" ]]; then
-  EXPECTED_SUM=$(grep -E "$(basename "$UPDATE_BUNDLE")\$" "$SCRIPT_DIR/embedded/SHA256SUMS-v1.0.1.txt" | awk '{print $1}')
+if [[ -z "$TARGET_TARBALL" && -f "$SCRIPT_DIR/embedded/SHA256SUMS-v1.0.3.txt" ]]; then
+  EXPECTED_SUM=$(grep -E "$(basename "$UPDATE_BUNDLE")\$" "$SCRIPT_DIR/embedded/SHA256SUMS-v1.0.3.txt" | awk '{print $1}')
   if [[ -n "$EXPECTED_SUM" ]]; then
     ACTUAL_SUM=$(sha256sum "$UPDATE_BUNDLE" | awk '{print $1}')
     if [[ "$EXPECTED_SUM" != "$ACTUAL_SUM" ]]; then

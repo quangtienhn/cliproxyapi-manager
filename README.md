@@ -4,7 +4,7 @@ A hardened installer and lifecycle manager for the **CLIProxyAPI Manager** web U
 
 The Account Manager is a small web application that sits next to [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) and lets you review accounts, start OAuth flows, and manage provider credentials. This repository installs it on Debian/Ubuntu, keeps it bound to loopback, and exposes it to Home Assistant through a restricted SSH tunnel - never through a public port.
 
-> **Project status: v1.0.1 release candidate.** See [Validation status](#validation-status) for exactly what has and has not been tested. This repository does not include CLIProxyAPI itself.
+> **Project status: v1.0.3 release candidate.** See [Validation status](#validation-status) for exactly what has and has not been tested. This repository does not include CLIProxyAPI itself.
 
 ## What you get
 

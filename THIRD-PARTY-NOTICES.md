@@ -17,7 +17,7 @@ The ISC license permits use, copying, modification, and distribution provided th
 ### CLIProxyAPI Manager bundle
 
 - License: MIT
-- Distribution: `server-installer/embedded/cliproxyapi-account-manager-v1.0.1.tar.gz`
+- Distribution: `server-installer/embedded/cliproxyapi-account-manager-v1.0.3.tar.gz`
 - Contents: original project code plus the `yaml` dependency.
 
 ## Runtime environment (not distributed as source)

@@ -53,7 +53,7 @@ if [[ "$(id -u)" -ne 0 && "$DRY_RUN" == "false" && "${INSTALLER_TEST_MODE:-0}" !
 fi
 
 echo "=================================================================="
-echo "    CLIProxyAPI Account Manager - Easy Installer v1.0.1          "
+echo "    CLIProxyAPI Account Manager - Easy Installer v1.0.3          "
 echo "=================================================================="
 
 # 1. Prerequisites Check
@@ -64,8 +64,8 @@ fi
 
 # 2. Package & Archive Verification
 log_info "[2/7] Verifying embedded package bundle integrity..."
-BUNDLE_FILE="$EMBEDDED_DIR/cliproxyapi-account-manager-v1.0.1.tar.gz"
-CHECKSUM_FILE="$EMBEDDED_DIR/SHA256SUMS-v1.0.1.txt"
+BUNDLE_FILE="$EMBEDDED_DIR/cliproxyapi-account-manager-v1.0.3.tar.gz"
+CHECKSUM_FILE="$EMBEDDED_DIR/SHA256SUMS-v1.0.3.txt"
 
 if [[ ! -f "$BUNDLE_FILE" ]]; then
   log_err "Embedded application bundle not found: $BUNDLE_FILE"

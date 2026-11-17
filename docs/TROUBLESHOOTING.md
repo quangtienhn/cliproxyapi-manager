@@ -138,7 +138,7 @@ A checksum error means the checkout is corrupted:
 cd cliproxyapi-manager
 git status
 git pull --ff-only
-sha256sum -c server-installer/embedded/SHA256SUMS-v1.0.1.txt
+sha256sum -c server-installer/embedded/SHA256SUMS-v1.0.3.txt
 ```
 
 The checksum file is relative to `server-installer/embedded/`; run `cd server-installer/embedded` first if your `sha256sum` does not accept the path form.
