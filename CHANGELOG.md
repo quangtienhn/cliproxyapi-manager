@@ -2,7 +2,9 @@
 
 All notable changes to this project are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.3] - Unreleased
+## [1.0.3] - 2026-11-17
+
+Deployed and verified on TX3 (Debian 12 ARM64) and HAOS production. No GitHub tag or Release was created for this version.
 
 ### Fixed
 
@@ -19,10 +21,13 @@ All notable changes to this project are documented in this file. The format foll
 - **The add-on still contained private deployment fallback options.** They were removed.
 - Gemini/Antigravity account deletion accepts legitimate email filename characters (`@`, `+`) while retaining strict path and credential-file validation.
 - Delete returns distinct validation, not-found, and filesystem errors; invalid targets do not trigger backups.
+- Pause/Resume now reads the authoritative top-level `disabled` field written by CLIProxyAPI v8, instead of preferring a stale `metadata.disabled` value.
+- Production deployment note: CLIProxyAPI must listen on `127.0.0.1:8317` when `management.allow-remote` is `false`; TX3 configuration was aligned accordingly.
 
 ### Added
 
 - `server-installer/lib/sshd_policy.sh` for safe, validated, reload-only per-user SSH policy management.
+- `account-manager/` application source and [NOTICE.md](account-manager/NOTICE.md) preserving the original author and MIT attribution.
 - `repository.yaml`, add-on translations, and original 256×256 / 512×512 icon assets.
 - `docs/` covering installation, operations, architecture, upgrading, troubleshooting, the add-on, and the release process.
 - Public contribution, security, code-of-conduct, issue, and pull-request material.
@@ -34,7 +39,8 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Changed
 
-- Embedded Account Manager bundle is runtime-only (`src/`, `public/`, package metadata, LICENSE), updated to bundle v1.0.3 (application package v1.0.2), with a new SHA-256 checksum.
+- Embedded Account Manager bundle is runtime-only (`src/`, `public/`, package metadata, LICENSE), updated to bundle v1.0.3 with matching internal package metadata, with a new SHA-256 checksum.
+- Application source is now included under `account-manager/` so the repository reflects the exact version running in production. Version strings in `package.json` and `package-lock.json` are aligned to 1.0.3.
 - Installer and updater now select and verify the v1.0.3 runtime bundle; backup metadata records the matching version.
 - Diagnostics now detect wildcard binds, legacy `no-port-forwarding` keys, and a missing sshd policy, with remediation hints.
 - Backup includes the tunnel `authorized_keys` and managed sshd policy for disaster-recovery reference.

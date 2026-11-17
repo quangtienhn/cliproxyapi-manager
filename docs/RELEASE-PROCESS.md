@@ -163,15 +163,15 @@ Only after the pull request is reviewed and merged:
 ```bash
 git checkout main
 git pull --ff-only
-git tag -a v1.0.1 -m "v1.0.1"
-git push origin v1.0.1
+git tag -a v1.0.3 -m "v1.0.3"
+git push origin v1.0.3
 ```
 
 Do not move or force-push an existing tag. If a release artifact is wrong, publish a new patch version.
 
 Create the GitHub release from the tag and attach:
 
-- `cliproxyapi-manager-v1.0.1.tar.gz`
+- `cliproxyapi-manager-v1.0.3.tar.gz`
 - `.sha256` file
 
 Release notes must include:

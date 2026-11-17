@@ -4,7 +4,27 @@ A hardened installer and lifecycle manager for the **CLIProxyAPI Manager** web U
 
 The Account Manager is a small web application that sits next to [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) and lets you review accounts, start OAuth flows, and manage provider credentials. This repository installs it on Debian/Ubuntu, keeps it bound to loopback, and exposes it to Home Assistant through a restricted SSH tunnel - never through a public port.
 
-> **Project status: v1.0.3 release candidate.** See [Validation status](#validation-status) for exactly what has and has not been tested. This repository does not include CLIProxyAPI itself.
+> **Project status: v1.0.3 deployed and verified on TX3 (Debian 12 ARM64) and HAOS production.** See [Validation status](#validation-status) for evidence and remaining limitations. No GitHub tag or Release was created for v1.0.3. This repository does not include CLIProxyAPI itself.
+
+## Project origin and attribution
+
+This repository builds on the original **CLIProxyAPI Account Manager** application authored by **Antigravity Engineering** and distributed under the MIT License (the original `package.json` records the author and license). That attribution is preserved in [account-manager/NOTICE.md](account-manager/NOTICE.md) and in the application's `package.json`.
+
+CLIProxyAPI itself is a separate upstream project by [router-for-me](https://github.com/router-for-me/CLIProxyAPI). This repository installs and manages it; it does not replace, bundle, or relicense it.
+
+### What this repository adds on top of the original application
+
+- A hardened server installer and lifecycle CLI (`cliproxy-manager`) for Debian/Ubuntu, including backup, restore, diagnostics, and safe uninstall.
+- Loopback-only binding and a dedicated, heavily restricted SSH tunnel account for Home Assistant Ingress access.
+- A Home Assistant OS add-on with host-key pinning, Ingress-only exposure, and persistent key storage.
+- Clean update workflows with checksum verification, snapshots, health-gated migrations, and automatic rollback.
+- Application fixes and features added after the original release:
+  - Gemini/Antigravity account deletion with email-style filenames (`@`, `+`).
+  - Per-account Pause / Resume through the CLIProxyAPI v8 Management API.
+  - Dashboard status badges and Active / Paused counters.
+  - Safe handling of the top-level `disabled` flag written by CLIProxyAPI v8.
+
+The deployable application source lives in [account-manager/](account-manager/); the runtime bundle is built from it into `server-installer/embedded/`.
 
 ## What you get
 
@@ -114,10 +134,13 @@ Read [SECURITY.md](SECURITY.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 | Real OpenSSH forwarding restrictions | **Passed on test host** | `tests/test_ssh_hardening.sh` (portable OpenSSH, 20 checks) |
 | Real Account Manager loopback binding | **Passed on test host** | `tests/test_real_service_loopback.js` (actual embedded app, socket inspection, LAN reachability) |
 | HAOS host-key parser | **Passed on test host** | `tests/test_hostkey_parser.js` |
-| Debian/Ubuntu bare metal and VM installation | **Not verified in this environment** | Cross-platform simulations only; see [reports/PUBLIC-RELEASE-READINESS.md](reports/PUBLIC-RELEASE-READINESS.md) |
-| ARM64 native installation | **Not verified** | No ARM64 hardware available during this audit |
-| Real Home Assistant OS add-on install and Ingress | **Not verified** | Add-on structure validated; Supervisor build not run |
-| CLIProxyAPI Management API integration | **Not verified** | External component, not included in this repository |
+| Debian 12 ARM64 production update | **PASS** | [TX3_HAOS_DEPLOYMENT_COMPLETION_REPORT.md](TX3_HAOS_DEPLOYMENT_COMPLETION_REPORT.md) — health healthy, loopback bind verified |
+| Real Home Assistant OS add-on + Ingress | **PASS** | Add-on `352ece41_cliproxyapi_am_tunnel` v1.0.3 started; tunnel `connected`; dashboard reachable via Ingress |
+| Pause / Resume via CLIProxyAPI Management API | **PASS** | Verified on TX3 with a synthetic account; `ACCOUNT_PAUSED`, `ACCOUNT_RESUMED` audit events |
+| Gemini/Antigravity delete | **PASS** | Verified on TX3 with a synthetic `antigravity-<email>.json` account |
+| Native Debian/Ubuntu fresh install on other targets | **Not verified** | Cross-platform simulations only; see [reports/PUBLIC-RELEASE-READINESS.md](reports/PUBLIC-RELEASE-READINESS.md) |
+| ARM64 fresh installation from scratch | **Not verified** | In-place production update only |
+| Real HAOS Supervisor add-on rebuild from this repo | **Not verified** | v1.0.3 add-on was already installed; no reinstall performed |
 
 The project distinguishes native execution, VM/container execution, emulation, and unit-level simulation. It does not claim a platform works merely because a simulation passed.
 
@@ -125,6 +148,8 @@ The project distinguishes native execution, VM/container execution, emulation, a
 
 - [Installation](docs/INSTALLATION.md)
 - [Operations, backup, and restore](docs/OPERATIONS.md)
+- [Pause / Resume accounts](docs/PAUSE-RESUME.md)
+- [TX3 + HAOS deployment completion report](TX3_HAOS_DEPLOYMENT_COMPLETION_REPORT.md)
 - [Architecture and security invariants](docs/ARCHITECTURE.md)
 - [Upgrading from v1.0.0](docs/UPGRADING.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)

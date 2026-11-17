@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLIProxyAPI Account Manager</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-badge">LAN</span>
+        <h1>CLIProxyAPI Account Manager</h1>
+      </div>
+      <div id="header-user" class="header-user hidden">
+        <span id="user-display"></span>
+        <button id="btn-logout" class="btn btn-sm btn-secondary">Logout</button>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+      <!-- Loading / Alerts -->
+      <div id="alert-box" class="alert hidden"></div>
+
+      <!-- View: First Time Setup -->
+      <section id="view-setup" class="card card-center hidden">
+        <h2>Initial Administrator Setup</h2>
+        <p class="subtitle">Set up master credentials for the Account Manager web console.</p>
+        <form id="form-setup">
+          <div class="form-group">
+            <label for="setup-username">Username</label>
+            <input type="text" id="setup-username" value="admin" required>
+          </div>
+          <div class="form-group">
+            <label for="setup-password">Master Password</label>
+            <input type="password" id="setup-password" minlength="8" required placeholder="Min 8 characters">
+          </div>
+          <div class="form-group">
+            <label for="setup-confirm">Confirm Password</label>
+            <input type="password" id="setup-confirm" minlength="8" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Initialize Console</button>
+        </form>
+      </section>
+
+      <!-- View: Login -->
+      <section id="view-login" class="card card-center hidden">
+        <h2>Account Manager Login</h2>
+        <p class="subtitle">Authenticate to manage CLIProxyAPI provider accounts.</p>
+        <form id="form-login">
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+      </section>
+
+      <!-- View: Dashboard -->
+      <section id="view-dashboard" class="hidden">
+        <!-- Overview Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-title">Active Accounts</span>
+            <span id="stat-active" class="stat-value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-title">Paused Accounts</span>
+            <span id="stat-paused" class="stat-value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-title">Configured Providers</span>
+            <span id="stat-providers" class="stat-value">2</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-title">Discovered Models</span>
+            <span id="stat-models" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="actions-bar">
+          <h2>Configured AI Accounts</h2>
+          <div class="btn-group">
+            <button id="btn-refresh-accounts" class="btn btn-secondary">Refresh</button>
+            <button id="btn-open-oauth-modal" class="btn btn-primary">+ Add Account</button>
+          </div>
+        </div>
+
+        <!-- Accounts Table -->
+        <div class="table-container card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Identity (Masked)</th>
+                <th>Plan Type</th>
+                <th>Status</th>
+                <th>Auth File</th>
+                <th>Last Refresh</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-tbody">
+              <tr>
+                <td colspan="7" class="text-center">Loading accounts...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Available Models & Test Section -->
+        <div class="section-split">
+          <div class="card">
+            <div class="card-header">
+              <h3>Discovered Upstream Models</h3>
+              <button id="btn-refresh-models" class="btn btn-sm btn-secondary">Refresh Models</button>
+            </div>
+            <div id="models-list" class="models-tags">
+              <span class="text-muted">Loading models...</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Live Provider Diagnostics</h3>
+            </div>
+            <form id="form-test-provider">
+              <div class="form-group">
+                <label for="test-provider-select">Provider to Test</label>
+                <select id="test-provider-select">
+                  <option value="codex">OpenAI Codex</option>
+                  <option value="xai">xAI (Grok)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="test-model-input">Model ID</label>
+                <input type="text" id="test-model-input" value="gpt-4o-mini">
+              </div>
+              <button type="submit" id="btn-run-test" class="btn btn-secondary btn-block">Run Inference Test</button>
+            </form>
+            <div id="test-result-box" class="test-result-box hidden"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: Add / OAuth Account -->
+    <div id="modal-oauth" class="modal hidden">
+      <div class="modal-content card">
+        <div class="modal-header">
+          <h3>Add / Connect Provider Account</h3>
+          <button id="btn-close-modal" class="btn-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Step 1: Select Provider -->
+          <div id="oauth-step-select">
+            <p>Select the AI provider to authenticate:</p>
+            <div class="provider-options">
+              <label class="provider-option">
+                <input type="radio" name="oauth-provider" value="codex" checked>
+                <div class="provider-info">
+                  <strong>OpenAI Codex (ChatGPT)</strong>
+                  <span>Browser redirect login</span>
+                </div>
+              </label>
+              <label class="provider-option">
+                <input type="radio" name="oauth-provider" value="xai">
+                <div class="provider-info">
+                  <strong>xAI (Grok)</strong>
+                  <span>Device Code Flow (RFC 8628)</span>
+                </div>
+              </label>
+              <label class="provider-option disabled">
+                <input type="radio" name="oauth-provider" value="gemini" disabled>
+                <div class="provider-info">
+                  <strong>Google Gemini (Antigravity)</strong>
+                  <span class="badge badge-warning">Deferred</span>
+                </div>
+              </label>
+            </div>
+            <button id="btn-start-oauth" class="btn btn-primary btn-block mt-3">Start Authentication Flow</button>
+          </div>
+
+          <!-- Step 2: Flow in Progress -->
+          <div id="oauth-step-progress" class="hidden">
+            <!-- For Device Code (xAI) -->
+            <div id="flow-device-code" class="flow-container hidden">
+              <p>Please complete authorization on another tab or device:</p>
+              <div class="device-box">
+                <span class="device-label">User Code</span>
+                <span id="device-user-code" class="device-code">----</span>
+              </div>
+              <p>Activation URL:</p>
+              <a id="device-auth-url" href="#" target="_blank" class="btn btn-primary btn-block">Open Activation Page &rarr;</a>
+              <div class="polling-indicator">
+                <div class="spinner"></div>
+                <span>Waiting for approval on provider website...</span>
+              </div>
+            </div>
+
+            <!-- For Browser Redirect (Codex) -->
+            <div id="flow-browser" class="flow-container hidden">
+              <p>Click the button below to authorize with OpenAI:</p>
+              <a id="browser-auth-url" href="#" target="_blank" class="btn btn-primary btn-block">Authorize OpenAI Account &rarr;</a>
+              <div class="polling-indicator mt-3">
+                <div class="spinner"></div>
+                <span>Waiting for browser callback completion...</span>
+              </div>
+            </div>
+
+            <button id="btn-cancel-oauth" class="btn btn-secondary btn-block mt-3">Cancel Flow</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -38,6 +38,13 @@ curl -s http://127.0.0.1:8320/api/health
 
 Never expose `8320` to fix a connectivity problem. Use an SSH local forward or the HAOS Ingress panel.
 
+### Routine account operations
+
+- **Delete an account:** click `Delete` on the exact row. This works for every provider, including Gemini/Antigravity files such as `antigravity-user@example.com.json`. A backup is created after the target is validated. See [PAUSE-RESUME.md](PAUSE-RESUME.md) for filename rules.
+- **Pause an account:** click `Pause` on an Active row. CLIProxyAPI disables the credential natively; no token is removed and the account is not selected for new requests.
+- **Resume an account:** click `Resume` on a Paused row. No re-login is needed while the credential is still valid. Errors are shown and leave the credential unchanged.
+- Paused accounts do not count as Active. Full usage notes are in [PAUSE-RESUME.md](PAUSE-RESUME.md).
+
 ## 2. Updates
 
 Check the installed version:

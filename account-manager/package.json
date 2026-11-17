@@ -1,0 +1,22 @@
+{
+  "name": "cliproxyapi-account-manager",
+  "version": "1.0.3",
+  "description": "LAN Account Manager for CLIProxyAPI v8.0.61 on TX3 / Linux",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "cliproxyapi",
+    "account-manager",
+    "oauth",
+    "lan"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT",
+  "dependencies": {
+    "yaml": "^2.9.1"
+  }
+}

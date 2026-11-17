@@ -19,6 +19,9 @@ manager.env
 *.key
 *.pem
 
+# Local deployment staging artifacts, never committed
+_deploy_v103/
+
 # Release artifacts attached to GitHub, never committed
 cliproxyapi-account-manager-easy-installer-v*.tar.gz
 cliproxyapi-account-manager-easy-installer-v*.tar.gz.sha256

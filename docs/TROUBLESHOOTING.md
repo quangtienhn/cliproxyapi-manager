@@ -143,6 +143,17 @@ sha256sum -c server-installer/embedded/SHA256SUMS-v1.0.3.txt
 
 The checksum file is relative to `server-installer/embedded/`; run `cd server-installer/embedded` first if your `sha256sum` does not accept the path form.
 
+## Pause / Resume fails
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `Unable to reach CLIProxyAPI: fetch failed` | CLIProxyAPI is not listening on `CLIPROXYAPI_URL` (normally `127.0.0.1:8317`) | Check `ss -ltnp | grep ':8317'`. With `management.allow-remote: false`, bind CLIProxyAPI to `127.0.0.1` |
+| `403` from Management API | The request source IP is not loopback, usually because CLIProxyAPI binds a LAN address | Bind CLIProxyAPI to loopback; do not change `allow-remote` |
+| `CLIProxyAPI accepted the request but the persisted state did not change` | CLIProxyAPI wrote a top-level `disabled` flag while a stale `metadata.disabled` remained | Use Account Manager v1.0.3 or newer, which reads the top-level flag first |
+| `CLIProxyAPI management key is not configured` | `CLIPROXYAPI_MANAGEMENT_KEY` missing from `manager.env` | Re-run the installer or the management-secret sync procedure |
+
+See [PAUSE-RESUME.md](PAUSE-RESUME.md) for the full behavior and [UPGRADING.md](UPGRADING.md) for verification commands.
+
 ## SSH key migration did not run
 
 Check the key manually:

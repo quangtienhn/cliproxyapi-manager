@@ -18,7 +18,9 @@ The ISC license permits use, copying, modification, and distribution provided th
 
 - License: MIT
 - Distribution: `server-installer/embedded/cliproxyapi-account-manager-v1.0.3.tar.gz`
-- Contents: original project code plus the `yaml` dependency.
+- Contents: CLIProxyAPI Account Manager application code plus the `yaml` dependency.
+- Original application author: **Antigravity Engineering** (recorded in the original `package.json`). That attribution is preserved in [account-manager/NOTICE.md](account-manager/NOTICE.md) and in the application metadata.
+- Extensions in this repository are listed in [CHANGELOG.md](CHANGELOG.md) and [account-manager/NOTICE.md](account-manager/NOTICE.md).
 
 ## Runtime environment (not distributed as source)
 

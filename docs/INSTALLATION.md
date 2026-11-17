@@ -18,7 +18,7 @@ If you only want to upgrade an existing v1.0.0 installation, read [UPGRADING.md]
 | Ubuntu 24.04 LTS | AMD64 | Target |
 | Ubuntu 24.04 LTS | ARM64 | Target |
 
-"Target" means the code is written for that platform and is exercised in simulation. Native bare-metal and VM installs were **not** performed during the v1.0.1 public-readiness audit. Treat the first install on a new platform as a change that needs a maintenance window and a backup.
+"Target" means the code is written for that platform and is exercised in simulation. Native bare-metal and VM installs were **not** performed during the earlier public-readiness audit. A v1.0.3 in-place update was verified on Debian 12 ARM64; treat the first fresh install on a new platform as a change that needs a maintenance window and a backup.
 
 Other Linux distributions may work but are unsupported.
 

@@ -1,12 +1,12 @@
-# Upgrading from v1.0.0 to v1.0.1
+# Upgrading from v1.0.0 to v1.0.3
 
-v1.0.0 has two defects that make the Home Assistant tunnel unusable and one that weakens remote-forwarding restrictions. v1.0.1 fixes them and migrates existing installations safely.
+v1.0.0 has two defects that make the Home Assistant tunnel unusable and one that weakens remote-forwarding restrictions. v1.0.3 fixes them and migrates existing installations safely.
 
 Read the whole page before starting. Take a backup first.
 
 ## 1. What changes
 
-| Area | v1.0.0 | v1.0.1 |
+| Area | v1.0.0 | v1.0.3 |
 | --- | --- | --- |
 | Tunnel key | Contains `no-port-forwarding`, so every local forward is refused | `permitopen="127.0.0.1:8320"` works; no `no-port-forwarding` |
 | Remote forwarding | Only `permitlisten="127.0.0.1:1"` | Per-user `Match` block: `AllowTcpForwarding local`, `PermitListen none` |
@@ -49,7 +49,7 @@ sudo bash update.sh
 
 If you are testing an unreleased branch, check out that branch instead. The updater uses the bundle shipped in the checkout.
 
-The updater verifies the bundle hash, snapshots the old application, swaps in v1.0.1, enforces loopback, restarts, and polls `/api/health`. Security migrations run **only after** a healthy start.
+The updater verifies the bundle hash, snapshots the old application, swaps in v1.0.3, enforces loopback, restarts, and polls `/api/health`. Security migrations run **only after** a healthy start.
 
 ### Expected output (abridged)
 
@@ -85,7 +85,8 @@ Expected:
 - a `Match User amtunnel` block ending with `ForceCommand /bin/false`;
 - `HOST=127.0.0.1` in `manager.env`;
 - `/api/health` returns `"status":"healthy"`;
-- `ss` shows `127.0.0.1:8320`, never `0.0.0.0`.
+- `ss` shows `127.0.0.1:8320`, never `0.0.0.0`;
+- CLIProxyAPI listens on `127.0.0.1:8317` when `management.allow-remote: false`, so Pause/Resume can reach the Management API. If it is bound to a LAN address, `ss -ltnp | grep ':8317'` will show that and Pause/Resume will fail with `fetch failed` or `403`.
 
 Then open the HAOS panel. If the add-on is still running from v1.0.0, its key remains valid; you only need to restart the add-on if it was in a failed state.
 
@@ -140,7 +141,7 @@ Treat this as an emergency action and re-upgrade as soon as the blocking issue i
 
 ## 8. HAOS add-on upgrade
 
-The add-on version is `1.0.1`. In Home Assistant:
+The add-on version is `1.0.3`. In Home Assistant:
 
 1. **Settings → Add-ons → Add-on Store → ⋮ → Check for updates**.
 2. Open **CLIProxyAPI Manager Tunnel** and update.

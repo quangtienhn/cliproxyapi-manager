@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Complete Upgrade Migration Test: v1.0.0 -> v1.0.1
+# Complete Upgrade Migration Test: v1.0.0 -> v1.0.3
 # ==============================================================================
 set -euo pipefail
 
@@ -15,7 +15,7 @@ FAIL=0
 ok() { echo "  [PASS] $1"; PASS=$((PASS + 1)); }
 bad() { echo "  [FAIL] $1"; FAIL=$((FAIL + 1)); }
 
-echo "=== Running Upgrade Migration Simulation: v1.0.0 -> v1.0.1 ==="
+echo "=== Running Upgrade Migration Simulation: v1.0.0 -> v1.0.3 ==="
 
 export INSTALLER_TEST_MODE=1
 export DEFAULT_APP_DIR="$TEST_ROOT/opt/cliproxyapi-account-manager"
@@ -67,7 +67,7 @@ ENV_HASH_BEFORE_MIGRATION=$(sha256sum "$DEFAULT_CONFIG_DIR/manager.env" | awk '{
 echo "[PHASE 1] Initial v1.0.0 environment established."
 
 # 2. Run update.sh
-echo "[PHASE 2] Executing update workflow to v1.0.1..."
+echo "[PHASE 2] Executing update workflow to v1.0.3..."
 if ! bash "$PROJECT_ROOT/server-installer/update.sh"; then
   echo "FAIL: update.sh exited non-zero" >&2
   exit 1
@@ -113,12 +113,12 @@ grep -q 'test@example.com' "$DEFAULT_AUTH_DIR/google-user.json" \
   && ok "OAuth credentials preserved" || bad "OAuth data was wiped"
 
 if [[ ! -f "$DEFAULT_APP_DIR/old-version-marker.txt" ]]; then
-  ok "application tree was replaced with v1.0.1"
+  ok "application tree was replaced with v1.0.3"
 else
   bad "old application tree was not replaced"
 fi
-grep -q '"version": "1.0.1"' "$DEFAULT_APP_DIR/package.json" \
-  && ok "deployed application reports version 1.0.1" || bad "deployed version is not 1.0.1"
+grep -q '"version": "1.0.3"' "$DEFAULT_APP_DIR/package.json" \
+  && ok "deployed application reports version 1.0.3" || bad "deployed version is not 1.0.3"
 
 compgen -G "$DEFAULT_BACKUP_ROOT/snapshot_*" >/dev/null \
   && ok "pre-update snapshot created" || bad "pre-update snapshot missing"

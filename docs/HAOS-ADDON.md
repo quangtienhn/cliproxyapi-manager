@@ -1,5 +1,7 @@
 # Home Assistant OS Add-on Guide
 
+> Production status: add-on `352ece41_cliproxyapi_am_tunnel` version `1.0.3` is installed and started, with Ingress enabled and the SSH tunnel verified connected. An older stopped add-on `local_cliproxyapi_am_tunnel` v1.0.0 was left untouched. See [../TX3_HAOS_DEPLOYMENT_COMPLETION_REPORT.md](../TX3_HAOS_DEPLOYMENT_COMPLETION_REPORT.md).
+
 The add-on **CLIProxyAPI Manager Tunnel** publishes the Account Manager inside Home Assistant through Ingress. It does not expose a port to your LAN or WAN.
 
 - Add-on slug: `cliproxyapi_am_tunnel`

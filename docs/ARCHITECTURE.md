@@ -61,6 +61,8 @@ A Node.js application (ES modules) with no build step. Runtime files:
 
 The bundle contains no `deploy/`, `docs/`, `tests/`, or repository documentation. It is versioned `1.0.3` and verified by `embedded/SHA256SUMS-v1.0.3.txt`.
 
+The editable source that produces this bundle is kept in `account-manager/` at the repository root, including its `src/`, `public/`, `tests/`, and version metadata. `account-manager/NOTICE.md` preserves the original application author attribution.
+
 ### HAOS add-on (`haos-addon/`)
 
 | File | Responsibility |

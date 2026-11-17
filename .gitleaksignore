@@ -1,0 +1,7 @@
+# False positives: synthetic security-test fixtures in remediation_p8.test.js.
+# These strings are deliberately malformed environment keys used to verify that
+# the strict state parser rejects unknown/duplicate/missing keys. They are not
+# credentials.
+account-manager/tests/remediation_p8.test.js:generic-api-key:63
+account-manager/tests/remediation_p8.test.js:generic-api-key:67
+account-manager/tests/remediation_p8.test.js:generic-api-key:71

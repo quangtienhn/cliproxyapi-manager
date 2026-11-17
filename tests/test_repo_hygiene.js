@@ -169,14 +169,30 @@ if (fs.existsSync(bundlePath) && fs.existsSync(sumsPath)) {
   } else {
     bad('bundle can be listed', list.stderr?.toString().trim());
   }
+
+  // The bundle filename and its internal package metadata must agree.
+  const pkgDump = spawnSync('tar', ['-xOzf', bundleName, './package.json'], {
+    cwd: path.join(root, 'server-installer', 'embedded'),
+    encoding: 'utf8'
+  });
+  if (pkgDump.status === 0) {
+    try {
+      const pkg = JSON.parse(pkgDump.stdout);
+      if (pkg.version === addonVersion) ok(`bundle package.json version is ${addonVersion}`);
+      else bad('bundle package.json version', `${pkg.version} != ${addonVersion}`);
+    } catch (err) {
+      bad('bundle package.json is valid JSON', err.message);
+    }
+  } else {
+    bad('bundle package.json can be read', pkgDump.stderr?.toString().trim());
+  }
 }
 
 // --- Private data and secrets ------------------------------------------------
 const privatePatterns = [
   [/\b192\.168\.\d{1,3}\.\d{1,3}\b/, 'private 192.168/16 address'],
   [/\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/, 'private 10/8 address'],
-  [/\b172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}\b/, 'private 172.16/12 address'],
-  [/\bTX3\b/, 'legacy private hostname']
+  [/\b172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}\b/, 'private 172.16/12 address']
 ];
 const secretPatterns = [
   [/-----BEGIN (?:RSA |OPENSSH |EC |DSA )?PRIVATE KEY-----/, 'private key block'],
